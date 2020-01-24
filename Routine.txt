@@ -1,5 +1,5 @@
 Sub ult_lin()
-    Sheets("ConsolidaÁ„o_CDs").Range("A1048559").Select
+    Sheets("Consolida√ß√£o_CDs").Range("A1048559").Select
     Selection.End(xlUp).Select
 End Sub
 
@@ -11,13 +11,13 @@ Sub simples()
     Dim wkbname As String
     wkbname = ActiveWorkbook.Name
     
-    'Chama o objeto passando os par‚metros
+    'Chama o objeto passando os par√¢metros
         Set fDlg = application.FileDialog(FileDialogType:=msoFileDialogOpen)
         With fDlg
-            'Alterar esta propriedade para True permitir· a seleÁ„o de v·rios arquivos
+            'Alterar esta propriedade para True permitir√° a sele√ß√£o de v√°rios arquivos
             .AllowMultiSelect = False
     
-            'Determina a forma de visualizaÁ„o dos aruqivos
+            'Determina a forma de visualiza√ß√£o dos aruqivos
             .InitialView = msoFileDialogViewDetails
     
             'Determina qual o drive inicial
@@ -30,7 +30,7 @@ Sub simples()
             Workbooks.Open(Filename:=lArquivo, UpdateLinks:=0).RunAutoMacros Which:=xlAutoOpen
             arquivo_importado = ActiveWorkbook.Name
         Else
-            MsgBox "Nenhum arquivo foi selecionado. ImportaÁ„o cancelada."
+            MsgBox "Nenhum arquivo foi selecionado. Importa√ß√£o cancelada."
             Exit Sub
         End If
         
@@ -38,12 +38,12 @@ Sub simples()
         ActiveSheet.Select
         
     'Testa filtro
-        'Testa se È possÌvel filtrar a planilha
+        'Testa se √© poss√≠vel filtrar a planilha
             Workbooks(arquivo_importado).ActiveSheet.Select
             If Not Workbooks(arquivo_importado).ActiveSheet.AutoFilterMode Then
                 Workbooks(arquivo_importado).ActiveSheet.Range("A1:CD1048576").AutoFilter
             End If
-        'Testa se a planilha est· filtrada
+        'Testa se a planilha est√° filtrada
             If Workbooks(arquivo_importado).ActiveSheet.FilterMode Then
                 Workbooks(arquivo_importado).ActiveSheet.ShowAllData
             End If
@@ -52,7 +52,7 @@ Sub simples()
         Workbooks(arquivo_importado).Activate
         ActiveSheet.Select
         Cells.EntireColumn.Hidden = False
-    'localizador de ˙ltima coluna
+    'localizador de √∫ltima coluna
         Range("XFD1").Select
         Selection.End(xlToLeft).Select
         atual_coluna = ActiveCell.Column
@@ -68,7 +68,7 @@ Sub simples()
         
     'Cola
         Workbooks(wkbname).Activate
-        Sheets("ConsolidaÁ„o_CDs").Select
+        Sheets("Consolida√ß√£o_CDs").Select
         Range("B1048559").Select
         Selection.End(xlUp).Select
         ActiveCell.Offset(1, 0).Select
@@ -88,18 +88,18 @@ Sub abrir_generico_cd()
     Dim lArquivo As String
     Dim nome_planilha As String
     Dim wkbname As String
-    wkbname = "Controle-M„e_V7.xlsb"
+    wkbname = "Controle-M√£e_V7.xlsb"
     
     'Zera flag do erro
     Workbooks(wkbname).Worksheets("Interpretador_CDs").Range("C1").FormulaR1C1 = ""
         
-    'Chama o objeto passando os par‚metros
+    'Chama o objeto passando os par√¢metros
         Set fDlg = application.FileDialog(FileDialogType:=msoFileDialogOpen)
         With fDlg
-            'Alterar esta propriedade para True permitir· a seleÁ„o de v·rios arquivos
+            'Alterar esta propriedade para True permitir√° a sele√ß√£o de v√°rios arquivos
             .AllowMultiSelect = False
     
-            'Determina a forma de visualizaÁ„o dos aruqivos
+            'Determina a forma de visualiza√ß√£o dos aruqivos
             .InitialView = msoFileDialogViewDetails
     
             'Determina qual o drive inicial
@@ -112,7 +112,7 @@ Sub abrir_generico_cd()
             Workbooks.Open(Filename:=lArquivo, UpdateLinks:=0).RunAutoMacros Which:=xlAutoOpen
             nome_planilha = ActiveWorkbook.Name
         Else
-            MsgBox "Nenhum arquivo foi selecionado. ImportaÁ„o cancelada."
+            MsgBox "Nenhum arquivo foi selecionado. Importa√ß√£o cancelada."
             Exit Sub
         End If
         
@@ -124,45 +124,45 @@ Sub abrir_generico_cd()
     
     Workbooks(wkbname).Worksheets("Interpretador_CDs").Calculate
     
-    'Testa as condiÁıes para verificar se d· para importar
+    'Testa as condi√ß√µes para verificar se d√° para importar
     If Workbooks(wkbname).Worksheets("Interpretador_CDs").Range("C1").Value = "STOP" Then
-        MsgBox "Houve uma falha na importaÁ„o. Favor verificar os dados registrados."
+        MsgBox "Houve uma falha na importa√ß√£o. Favor verificar os dados registrados."
         Exit Sub
     Else
         Workbooks(wkbname).Worksheets("Interpretador_CDs").Range("C1").Value = ""
     End If
     
     If Workbooks(wkbname).Worksheets("Interpretador_CDs").Range("C5").Value <= 0 Then
-        MsgBox "Faltou selecionar pelo menos 1 Centro de DistribuiÁ„o. Favor reiniciar importaÁ„o."
+        MsgBox "Faltou selecionar pelo menos 1 Centro de Distribui√ß√£o. Favor reiniciar importa√ß√£o."
         Exit Sub
     End If
     
     If Workbooks(wkbname).Worksheets("Interpretador_CDs").Range("C2").Value <= 0 Then
-        MsgBox "O perÌodo n„o foi selecionado. Favor reiniciar importaÁ„o."
+        MsgBox "O per√≠odo n√£o foi selecionado. Favor reiniciar importa√ß√£o."
         Exit Sub
     End If
     
     If Workbooks(wkbname).Worksheets("Interpretador_CDs").Range("C4").Value <= 0 Then
-        MsgBox "Faltou preencher a data de referÍncia. Favor reiniciar importaÁ„o."
+        MsgBox "Faltou preencher a data de refer√™ncia. Favor reiniciar importa√ß√£o."
         Exit Sub
     End If
         
     'Conta a quantidade de linhas preenchidas
     Dim linhas_importadas As Double
-    linhas_importadas = (ContaLinhas(Workbooks(wkbname).Worksheets("CDs_Tempor·rio").Range("A:A"))) + 1000
+    linhas_importadas = (ContaLinhas(Workbooks(wkbname).Worksheets("CDs_Tempor√°rio").Range("A:A"))) + 1000
     
-    'Testa se a planilha importada para ver se est· filtrada
+    'Testa se a planilha importada para ver se est√° filtrada
         If Workbooks(nome_planilha).ActiveSheet.FilterMode Then
             Workbooks(nome_planilha).ActiveSheet.ShowAllData
         End If
     
-    'Testa se È possÌvel filtrar a planilha
+    'Testa se √© poss√≠vel filtrar a planilha
         If Not Workbooks(nome_planilha).ActiveSheet.AutoFilterMode Then
             Workbooks(nome_planilha).ActiveSheet.Range("A1:BZ" & linha_importada).AutoFilter
         End If
    
     Workbooks(wkbname).Activate
-    Sheets("CDs_Tempor·rio").Select
+    Sheets("CDs_Tempor√°rio").Select
     Cells.Clear
         
     'Seleciona os dados para copiar
@@ -172,9 +172,9 @@ Sub abrir_generico_cd()
         Range("A1:AU" & linhas_importadas).Select
         Selection.Copy
         
-    'Colar no lugar tempor·rio
+    'Colar no lugar tempor√°rio
         Workbooks(wkbname).Activate
-        Sheets("CDs_Tempor·rio").Select
+        Sheets("CDs_Tempor√°rio").Select
         Range("A1").PasteSpecial Paste:=xlPasteValues
         
     'Criar Filtro
@@ -189,21 +189,21 @@ Sub abrir_generico_cd()
         Dim linha_pesquisa As Double, linha_cd_matriz As Integer, check_filha As Boolean, qlf As Double, qlm As Double, cod_cd As Double
         Dim wbkname As String
         
-        linha_pesquisa = 2 'linha que comeÁa a busca na planilha CDs Tempor·rios
-        linha_cd_matriz = 6 'linha que comeÁa a busca na planilha Interpretador de CDs
+        linha_pesquisa = 2 'linha que come√ßa a busca na planilha CDs Tempor√°rios
+        linha_cd_matriz = 6 'linha que come√ßa a busca na planilha Interpretador de CDs
         check_filha = False
-        qlf = 0 'Contador de execuÁıes de um mesmo CD em planilhas distintas
-        qlm = 0 'Contador de execuÁ„o de buscas de CDs distintos procurados na planilha filha
+        qlf = 0 'Contador de execu√ß√µes de um mesmo CD em planilhas distintas
+        qlm = 0 'Contador de execu√ß√£o de buscas de CDs distintos procurados na planilha filha
         qlm_max = Sheets("Interpretador_CDs").Range("C5").Value
         cod_cd = Sheets("Interpretador_CDs").Range("A" & linha_cd_matriz).Value
         col_cd = Sheets("Interpretador_CDs").Range("E6").Value
     
         Do ' Loop do CD
-            MsgBox "Iniciando busca m„e # " & qlm
+            MsgBox "Iniciando busca m√£e # " & qlm
             Do 'Loop da busca do CD
                 qlf = qlf + 1
-                MsgBox "Contador filho na execuÁ„o # " & qlf
-                If cod_cd = Sheets("CDs_Tempor·rio").Cells(linha_pesquisa, col_cd).Value Then
+                MsgBox "Contador filho na execu√ß√£o # " & qlf
+                If cod_cd = Sheets("CDs_Tempor√°rio").Cells(linha_pesquisa, col_cd).Value Then
                     MsgBox "CD " & cod_cd & " encontrado na planilha, na linha " & linha_pesquisa & " e coluna " & col_cd & "."
                     check_filha = True
                     Exit Do
@@ -213,23 +213,23 @@ Sub abrir_generico_cd()
                  linha_pesquisa = linha_pesquisa + 1
             Loop While qlf <= 9 'ou usar linhas_importadas
             qlm = qlm + 1 'adiciona uma volta no contador do Loop dos CDs
-            linha_cd_matriz = linha_cd_matriz + 1 'adiciona uma linha, para buscar o prÛximo CD
+            linha_cd_matriz = linha_cd_matriz + 1 'adiciona uma linha, para buscar o pr√≥ximo CD
         Loop Until qlm = qlm_max
             
         If check_filha = False Then
-            Sheets("Interpretador_CDs").Range("E8").FormulaR1C1 = "N„o"
-            Sheets("CDs_Tempor·rio").Select
+            Sheets("Interpretador_CDs").Range("E8").FormulaR1C1 = "N√£o"
+            Sheets("CDs_Tempor√°rio").Select
             Cells.Clear
             Sheets("Controle_CDs").Select
-            MsgBox "N„o encontramos todos os CDs selecioandos - Finalizando processo!"
+            MsgBox "N√£o encontramos todos os CDs selecioandos - Finalizando processo!"
             Exit Sub
         Else
             Sheets("Interpretador_CDs").Range("E8").FormulaR1C1 = "Sim"
             Sheets("Controle_CDs").Select
-            MsgBox "Encontramos todos os CDs selecionados! SÛ falta tratar."
+            MsgBox "Encontramos todos os CDs selecionados! S√≥ falta tratar."
         End If
   
-    MsgBox "atÈ aqui chegou no fim..."
+    MsgBox "at√© aqui chegou no fim..."
             
 End Sub
 
@@ -257,22 +257,22 @@ Sub impo()
        WScript.ConnectObject application, "on"
     End If
     
-    'Maximizar a tela (quando j· fez logon)
+    'Maximizar a tela (quando j√° fez logon)
     session.findById("wnd[0]").maximize
-    'Digitar o cÛdigo do relatÛrio na barra inicial
+    'Digitar o c√≥digo do relat√≥rio na barra inicial
     session.findById("wnd[0]/tbar[0]/okcd").Text = "z9d19n"
-    'Clicar no bot„o para abrir a transaÁ„o
+    'Clicar no bot√£o para abrir a transa√ß√£o
     session.findById("wnd[0]/tbar[0]/btn[0]").press
-    'Clicar no bot„o para filtrar o campo "tipo de documento de vendas"
+    'Clicar no bot√£o para filtrar o campo "tipo de documento de vendas"
     session.findById("wnd[0]/usr/btn%_S_AUART_%_APP_%-VALU_PUSH").press
     'Abre janela da data
     session.findById("wnd[0]").sendVKey 4
-    'aperta o bot„o ok para guardar a data de inÌcio
+    'aperta o bot√£o ok para guardar a data de in√≠cio
     session.findById("wnd[1]/tbar[0]/btn[0]").press
     'Clica no campo e digita YKIT no campo "tipo doc de vendas"
     session.findById("wnd[0]/usr/ctxtS_AUART-LOW").SetFocus
     session.findById("wnd[0]/usr/ctxtS_AUART-LOW").Text = "YKIT"
-    'Digita 18* na organizaÁ„o de vendas
+    'Digita 18* na organiza√ß√£o de vendas
     session.findById("wnd[0]/usr/ctxtS_VKORG-LOW").Text = "18*"
     'Abrir janela para digitar os tipos de documento
     session.findById("wnd[0]/usr/btn%_S_AUART_%_APP_%-VALU_PUSH").press
@@ -282,14 +282,14 @@ Sub impo()
     session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,1]").Text = "YKIV"
     'Digitar o primeiro tipo de doc - Z371
     session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,2]").Text = "Z371"
-    'Apertar o bot„o para fechar a janela
+    'Apertar o bot√£o para fechar a janela
     session.findById("wnd[1]/tbar[0]/btn[8]").press
     'Digita a data final no campo correto
     session.findById("wnd[0]/usr/ctxtS_ERDAT-HIGH").Text = "31.12.2019"
     session.findById("wnd[0]/usr/ctxtS_ERDAT-LOW").Text = "01.08.2019"
     'Colocar o layout correto
     session.findById("wnd[0]/usr/ctxtVARIANT").Text = "/BRUNO"
-    'Resto do cÛdigo para filtrar
+    'Resto do c√≥digo para filtrar
     session.findById("wnd[0]/usr/ctxtS_VTWEG-LOW").Text = "01"
     session.findById("wnd[0]/usr/ctxtS_SPART-LOW").Text = "01"
     session.findById("wnd[0]/usr/ctxtS_STATIT-LOW").SetFocus
@@ -306,7 +306,7 @@ Sub impo()
     session.findById("wnd[2]/usr/cntlOPTION_CONTAINER/shellcont/shell").doubleClickCurrentCell
     session.findById("wnd[1]/tbar[0]/btn[8]").press
     
-    'executar o relatÛrio
+    'executar o relat√≥rio
     session.findById("wnd[0]/tbar[1]/btn[8]").press
     
     'processo para exportar para Excel
@@ -321,7 +321,7 @@ Sub impo()
     Range("A1").Select
     ActiveSheet.PasteSpecial Format:="Texto unicode", Link:=False, DisplayAsIcon:=False, NoHTMLFormatting:=True
     
-    'CÛdigo para fechar as sessıes do SAP
+    'C√≥digo para fechar as sess√µes do SAP
             While connection.Children.Count > 0
                 Set MySession = connection.Children(0)
                 MySession.findById("wnd[0]").Close
@@ -329,7 +329,7 @@ Sub impo()
                 MySession.findById("wnd[1]/usr/btnSPOP-OPTION1").press
                 On Error GoTo 0
             Wend
-    'registra hor·rio do relatÛrio
+    'registra hor√°rio do relat√≥rio
     grava_hora_z9d19n
     
 'Tratar dados importados
@@ -395,10 +395,10 @@ Sub impo()
     
     Sheets("Z9D19N").Range("AS1").FormulaR1C1 = "Flag PaP"
     Sheets("Z9D19N").Range("AT1").FormulaR1C1 = "Time"
-    Sheets("Z9D19N").Range("AU1").FormulaR1C1 = "Regi„o"
+    Sheets("Z9D19N").Range("AU1").FormulaR1C1 = "Regi√£o"
     Sheets("Z9D19N").Range("AV1").FormulaR1C1 = "Nome Vendedor"
     
-    Sheets("Z9D19N").Range("AS2").FormulaR1C1 = "=IF(ISNA(MATCH(VALUE(RC[-17]),depara_portaporta!C1,0)),""N„o È Porta a Porta"",""Porta a Porta"")"
+    Sheets("Z9D19N").Range("AS2").FormulaR1C1 = "=IF(ISNA(MATCH(VALUE(RC[-17]),depara_portaporta!C1,0)),""N√£o √© Porta a Porta"",""Porta a Porta"")"
     Sheets("Z9D19N").Range("AT2").FormulaR1C1 = "=INDIRECT(ADDRESS(MATCH(VALUE(RC[-22]),depara_vendedores!C1,0),3,1,1,""depara_vendedores""),TRUE)"
     Sheets("Z9D19N").Range("AU2").FormulaR1C1 = "=INDIRECT(ADDRESS(MATCH(VALUE(RC[-23]),depara_vendedores!C1,0),4,1,1,""depara_vendedores""),TRUE)"
     Sheets("Z9D19N").Range("AV2").FormulaR1C1 = "=INDIRECT(ADDRESS(MATCH(VALUE(RC[-24]),depara_vendedores!C1,0),2,1,1,""depara_vendedores""),TRUE)"
@@ -460,7 +460,7 @@ Sub extrair_claro()
     
     SAP_Logon
     
-    'InstruÁ„o para guardar os valores das ordens da claro
+    'Instru√ß√£o para guardar os valores das ordens da claro
         'Contar linhas
             Dim ultima_linha As Double
             ultima_linha = ContaLinhas(Sheets("origem_ordens_claro").Range("A:A"))
@@ -483,32 +483,32 @@ Sub extrair_claro()
        WScript.ConnectObject application, "on"
     End If
     
-    'Maximizar a tela (quando j· fez logon)
+    'Maximizar a tela (quando j√° fez logon)
     session.findById("wnd[0]").maximize
-    'Digitar o cÛdigo do relatÛrio na barra inicial
+    'Digitar o c√≥digo do relat√≥rio na barra inicial
     session.findById("wnd[0]/tbar[0]/okcd").Text = "zami001n"
-    'Clicar no bot„o para abrir a transaÁ„o
+    'Clicar no bot√£o para abrir a transa√ß√£o
     session.findById("wnd[0]/tbar[0]/btn[0]").press
-    'Coloca o Centro de DistribuiÁ„o como *
+    'Coloca o Centro de Distribui√ß√£o como *
     session.findById("wnd[0]/usr/ctxtX_WERKS-LOW").Text = "*"
-    'Coloca a vis„o como V011
+    'Coloca a vis√£o como V011
     session.findById("wnd[0]/usr/ctxtX_VISAO").Text = "V002"
-    'Abre a janela para preencher com o n˙mero das ordens
+    'Abre a janela para preencher com o n√∫mero das ordens
     session.findById("wnd[0]/usr/btn%_X_VBELN_%_APP_%-VALU_PUSH").press
     'Cola as ordens selecionadas
     session.findById("wnd[1]/tbar[0]/btn[24]").press
-    'Envia as ordens para seleÁ„o
+    'Envia as ordens para sele√ß√£o
     session.findById("wnd[1]/tbar[0]/btn[8]").press
-    'Executar o relatÛrio
+    'Executar o relat√≥rio
     session.findById("wnd[0]/tbar[1]/btn[8]").press
-    'CÛdigo para exportar
+    'C√≥digo para exportar
     session.findById("wnd[0]/mbar/menu[0]/menu[4]/menu[1]").Select
-    session.findById("wnd[1]/usr/ctxtDY_PATH").Text = "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M„e (2019)\ExtraÌdo_SAP"
+    session.findById("wnd[1]/usr/ctxtDY_PATH").Text = "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M√£e (2019)\Extra√≠do_SAP"
     session.findById("wnd[1]/usr/ctxtDY_FILENAME").Text = "base_claro.xlsx"
     session.findById("wnd[1]/usr/ctxtDY_FILENAME").caretPosition = 15
     session.findById("wnd[1]/tbar[0]/btn[11]").press
     
-    'CÛdigo para fechar as sessıes do SAP
+    'C√≥digo para fechar as sess√µes do SAP
             While connection.Children.Count > 0
                 Set MySession = connection.Children(0)
                 MySession.findById("wnd[0]").Close
@@ -519,7 +519,7 @@ Sub extrair_claro()
             
     Importar_Claro_V2
 
-    MsgBox "ExtraÁ„o da Claro realizada com sucesso"
+    MsgBox "Extra√ß√£o da Claro realizada com sucesso"
     
 End Sub
 
@@ -535,7 +535,7 @@ Sub Importar_Claro_V2()
     Dim xRet As Boolean
     xRet = IsWorkBookOpen("base_claro.xlsx")
     If Not xRet Then
-        Workbooks.Open Filename:="G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M„e (2019)\ExtraÌdo_SAP\base_claro.xlsx"
+        Workbooks.Open Filename:="G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M√£e (2019)\Extra√≠do_SAP\base_claro.xlsx"
         Windows("base_claro.xlsx").Activate
     Else
         Windows("base_claro.xlsx").Activate
@@ -604,7 +604,7 @@ Sub estoque_full_full()
     f_full
     acoes_corte
     Tratar_estoque_final
-    Copia_RelatÛrio_Estoque
+    Copia_Relat√≥rio_Estoque
     'mail_marco_estoque
     application.Calculation = xlAutomatic
 End Sub
@@ -635,7 +635,7 @@ Dim nome_mae As String
 nome_mae = ActiveWorkbook.Name
 Debug.Print nome_mae
 
-Sheets("PrÈ-imp").Select
+Sheets("Pr√©-imp").Select
 Cells.Clear
 
 SAP_Logon
@@ -657,9 +657,9 @@ SAP_Logon
        WScript.ConnectObject application, "on"
     End If
 
-    'Limpar a ·rea de prÈ-importaÁ„o
-        Sheets("PrÈ-imp").Cells.Clear
-    'Extrair do SAP o relatÛrio com todos os dados
+    'Limpar a √°rea de pr√©-importa√ß√£o
+        Sheets("Pr√©-imp").Cells.Clear
+    'Extrair do SAP o relat√≥rio com todos os dados
         'Acessar consulta
             'digita MB52 na caixa de busca
                 session.findById("wnd[0]").maximize
@@ -682,7 +682,7 @@ SAP_Logon
             session.findById("wnd[0]/tbar[1]/btn[8]").press
 
 
-       'Clicar no bot„o exportar
+       'Clicar no bot√£o exportar
             'Exportar dados
             session.findById("wnd[0]").maximize
             session.findById("wnd[0]/tbar[1]/btn[45]").press
@@ -690,10 +690,10 @@ SAP_Logon
             session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[4,0]").SetFocus
             session.findById("wnd[1]/tbar[0]/btn[0]").press
             
-            Sheets("PrÈ-Imp").Range("A1").Select
+            Sheets("Pr√©-Imp").Range("A1").Select
             ActiveSheet.PasteSpecial Format:="Texto unicode", Link:=False, DisplayAsIcon:=False, NoHTMLFormatting:=True
 
-    'CÛdigo para fechar as sessıes do SAP
+    'C√≥digo para fechar as sess√µes do SAP
             While connection.Children.Count > 0
                 Set MySession = connection.Children(0)
                 MySession.findById("wnd[0]").Close
@@ -704,8 +704,8 @@ SAP_Logon
 End Sub
 
 Sub tratar_estoque()
-   'Tratar a importaÁ„o dos dados
-        Sheets("PrÈ-imp").Range("A1").Select
+   'Tratar a importa√ß√£o dos dados
+        Sheets("Pr√©-imp").Range("A1").Select
         Range("1:1,3:3").Delete shift:=xlUp
         Columns("A:A").Select
         Selection.TextToColumns Destination:=Range("A1"), DataType:=xlDelimited, _
@@ -734,28 +734,28 @@ Sub tratar_estoque()
             
         
 Dim lin_pre_imp As Long
-lin_pre_imp = ContaLinhas(Sheets("PrÈ-Imp").Range("B:B"))
+lin_pre_imp = ContaLinhas(Sheets("Pr√©-Imp").Range("B:B"))
 Debug.Print lin_pre_imp
             
     'Inserir coluna A com a chave Material & CD
         
-        Sheets("PrÈ-Imp").Columns("A:A").Insert shift:=xlToRight
-        Sheets("PrÈ-Imp").Range("A1").FormulaR1C1 = "Chave"
-        Sheets("PrÈ-Imp").Range("A2:A" & lin_pre_imp).FormulaR1C1 = "=value(RC[2]&RC[1])"
-        Sheets("PrÈ-Imp").Range("A2:A" & lin_pre_imp).Copy
+        Sheets("Pr√©-Imp").Columns("A:A").Insert shift:=xlToRight
+        Sheets("Pr√©-Imp").Range("A1").FormulaR1C1 = "Chave"
+        Sheets("Pr√©-Imp").Range("A2:A" & lin_pre_imp).FormulaR1C1 = "=value(RC[2]&RC[1])"
+        Sheets("Pr√©-Imp").Range("A2:A" & lin_pre_imp).Copy
         Range("A2:A" & lin_pre_imp).PasteSpecial Paste:=xlPasteFormulas
-        Sheets("PrÈ-Imp").Calculate
-        Sheets("PrÈ-Imp").Range("A2:A" & lin_pre_imp).Copy
-        Sheets("PrÈ-Imp").Range("A2:A" & lin_pre_imp).PasteSpecial Paste:=xlPasteValues
+        Sheets("Pr√©-Imp").Calculate
+        Sheets("Pr√©-Imp").Range("A2:A" & lin_pre_imp).Copy
+        Sheets("Pr√©-Imp").Range("A2:A" & lin_pre_imp).PasteSpecial Paste:=xlPasteValues
            
-        MsgBox "ImportaÁ„o de estoque realizada com sucesso!"
+        MsgBox "Importa√ß√£o de estoque realizada com sucesso!"
 
 Dim lin_pos_imp As Long
-lin_pos_imp = ContaLinhas(Sheets("PrÈ-Imp").Range("B:B"))
+lin_pos_imp = ContaLinhas(Sheets("Pr√©-Imp").Range("B:B"))
 Debug.Print lin_pos_imp
 
     Sheets("Estoque").Range("A:R").Clear
-    Sheets("PrÈ-imp").Range("A1:R" & lin_pos_imp).Copy
+    Sheets("Pr√©-imp").Range("A1:R" & lin_pos_imp).Copy
     Sheets("Estoque").Range("A1").PasteSpecial Paste:=xlPasteValues
     Sheets("Estoque").Columns("A:R").AutoFilter
 
@@ -772,9 +772,9 @@ Sub criar_lista_demanda()
     Dim lin_rf As Long
     lin_rf = ContaLinhas(Sheets("TD_Demanda").Range("A:A")) + 1
     Debug.Print lin_rf
-    Sheets("RelatÛrio_Estoque_Demanda").Range("A4:Z1048576").ClearContents
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("A4:Z1048576").ClearContents
     On Error Resume Next
-    Worksheets("RelatÛrio_Estoque_Demanda").ShowAllData
+    Worksheets("Relat√≥rio_Estoque_Demanda").ShowAllData
     
     'Preparar para copiar
     Dim lin_td_d As Long
@@ -783,29 +783,29 @@ Sub criar_lista_demanda()
     Sheets("TD_Demanda").Range("A4:D" & lin_td_d).Copy
     
     'Colar resultado da TD
-    Sheets("RelatÛrio_Estoque_Demanda").Range("A4").PasteSpecial Paste:=xlPasteValues
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("A4").PasteSpecial Paste:=xlPasteValues
     
     'Tratar colunas com valor
-    Sheets("RelatÛrio_Estoque_Demanda").Select
+    Sheets("Relat√≥rio_Estoque_Demanda").Select
     Range("A4:A" & lin_td_d).Select
     Selection.TextToColumns Destination:=Range("A4"), DataType:=xlDelimited, _
         TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _
         Semicolon:=False, Comma:=False, Space:=False, Other:=False, OtherChar _
         :="|", FieldInfo:=Array(1, 1), TrailingMinusNumbers:=True
     
-    Sheets("RelatÛrio_Estoque_Demanda").Range("B4:B" & lin_td_d).Select
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("B4:B" & lin_td_d).Select
     Range(Selection, Selection.End(xlDown)).Select
     Selection.TextToColumns Destination:=Range("B4"), DataType:=xlDelimited, _
         TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _
         Semicolon:=False, Comma:=False, Space:=False, Other:=False, OtherChar _
         :="|", FieldInfo:=Array(1, 1), TrailingMinusNumbers:=True
         
-    ActiveWorkbook.Worksheets("RelatÛrio_Estoque_Demanda").AutoFilter.Sort. _
+    ActiveWorkbook.Worksheets("Relat√≥rio_Estoque_Demanda").AutoFilter.Sort. _
         SortFields.Clear
-    ActiveWorkbook.Worksheets("RelatÛrio_Estoque_Demanda").AutoFilter.Sort. _
+    ActiveWorkbook.Worksheets("Relat√≥rio_Estoque_Demanda").AutoFilter.Sort. _
         SortFields.Add Key:=Range("D3:D1048576"), SortOn:=xlSortOnValues, Order:= _
         xlDescending, DataOption:=xlSortNormal
-    With ActiveWorkbook.Worksheets("RelatÛrio_Estoque_Demanda").AutoFilter.Sort
+    With ActiveWorkbook.Worksheets("Relat√≥rio_Estoque_Demanda").AutoFilter.Sort
         .Header = xlYes
         .MatchCase = False
         .Orientation = xlTopToBottom
@@ -816,7 +816,7 @@ Sub criar_lista_demanda()
 End Sub
 Sub f_full()
     application.Calculation = xlManual
-    Worksheets("RelatÛrio_Estoque_Demanda").ShowAllData
+    Worksheets("Relat√≥rio_Estoque_Demanda").ShowAllData
     f1
     f2
     f3
@@ -832,162 +832,162 @@ End Sub
 
 Sub f1()
     Dim lin_f As Long
-    lin_f = ContaLinhas(Sheets("RelatÛrio_Estoque_Demanda").Range("A:A")) + 2
+    lin_f = ContaLinhas(Sheets("Relat√≥rio_Estoque_Demanda").Range("A:A")) + 2
 
     'Cria chave CD e MATERIAL
-    Sheets("RelatÛrio_Estoque_Demanda").Range("G4:G" & lin_f).FormulaR1C1 = "=value(RC1&RC2)"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("G4:G" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("G4").PasteSpecial Paste:=xlPasteValues
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("G4:G" & lin_f).FormulaR1C1 = "=value(RC1&RC2)"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("G4:G" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("G4").PasteSpecial Paste:=xlPasteValues
 
 End Sub
 Sub f2()
     Dim lin_f As Long
-    lin_f = ContaLinhas(Sheets("RelatÛrio_Estoque_Demanda").Range("A:A")) + 2
+    lin_f = ContaLinhas(Sheets("Relat√≥rio_Estoque_Demanda").Range("A:A")) + 2
     'Conversor de caixas (busca quantos quilos cabem em uma caixa)
-    Sheets("RelatÛrio_Estoque_Demanda").Range("E4:E" & lin_f).FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(RC[-3],'DEPARA-CX'!C1,0),3,1,1,""DEPARA-CX""),TRUE),""Material n„o localizado"")"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("E4:E" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("E4:E" & lin_f).PasteSpecial Paste:=xlPasteValues
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("E4:E" & lin_f).FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(RC[-3],'DEPARA-CX'!C1,0),3,1,1,""DEPARA-CX""),TRUE),""Material n√£o localizado"")"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("E4:E" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("E4:E" & lin_f).PasteSpecial Paste:=xlPasteValues
 
 End Sub
 
 Sub f3()
     Dim lin_f As Long
-    lin_f = ContaLinhas(Sheets("RelatÛrio_Estoque_Demanda").Range("A:A")) + 2
+    lin_f = ContaLinhas(Sheets("Relat√≥rio_Estoque_Demanda").Range("A:A")) + 2
     
     'Converte demanda de Caixa em Kilos
-    Sheets("RelatÛrio_Estoque_Demanda").Range("F4:F" & lin_f).FormulaR1C1 = _
-        "=IFERROR(IF(OR(RC[-1]=0,RC[-2]=0),""Multiplicando por 0"",IF(ISBLANK(RC[-2]),""Material n„o localizado"",RC[-2]*RC[-1])),""material n„o localizado"")"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("F4:F" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("F4:F" & lin_f).PasteSpecial Paste:=xlPasteValues
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("F4:F" & lin_f).FormulaR1C1 = _
+        "=IFERROR(IF(OR(RC[-1]=0,RC[-2]=0),""Multiplicando por 0"",IF(ISBLANK(RC[-2]),""Material n√£o localizado"",RC[-2]*RC[-1])),""material n√£o localizado"")"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("F4:F" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("F4:F" & lin_f).PasteSpecial Paste:=xlPasteValues
 
 End Sub
 Sub f4()
     Dim lin_f As Long
-    lin_f = ContaLinhas(Sheets("RelatÛrio_Estoque_Demanda").Range("A:A")) + 2
+    lin_f = ContaLinhas(Sheets("Relat√≥rio_Estoque_Demanda").Range("A:A")) + 2
     
-    'UtilizaÁ„o livre em KGs
-    Sheets("RelatÛrio_Estoque_Demanda").Range("H4:H" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C6)"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("H4:H" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("H4:H" & lin_f).PasteSpecial Paste:=xlPasteValues
+    'Utiliza√ß√£o livre em KGs
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("H4:H" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C6)"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("H4:H" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("H4:H" & lin_f).PasteSpecial Paste:=xlPasteValues
     
-    'UtilizaÁ„o livre em CXs
-    Sheets("RelatÛrio_Estoque_Demanda").Range("I4:I" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("I4:I" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("I4:I" & lin_f).PasteSpecial Paste:=xlPasteValues
+    'Utiliza√ß√£o livre em CXs
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("I4:I" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("I4:I" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("I4:I" & lin_f).PasteSpecial Paste:=xlPasteValues
 
 End Sub
 
 Sub f5()
     Dim lin_f As Long
-    lin_f = ContaLinhas(Sheets("RelatÛrio_Estoque_Demanda").Range("A:A")) + 2
+    lin_f = ContaLinhas(Sheets("Relat√≥rio_Estoque_Demanda").Range("A:A")) + 2
     
     'Em Transito KG
-    Sheets("RelatÛrio_Estoque_Demanda").Range("J4:J" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C9)"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("J4:J" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("J4:J" & lin_f).PasteSpecial Paste:=xlPasteValues
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("J4:J" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C9)"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("J4:J" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("J4:J" & lin_f).PasteSpecial Paste:=xlPasteValues
     
     'Em Transito CX
-    Sheets("RelatÛrio_Estoque_Demanda").Range("K4:K" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("K4:K" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("K4:K" & lin_f).PasteSpecial Paste:=xlPasteValues
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("K4:K" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("K4:K" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("K4:K" & lin_f).PasteSpecial Paste:=xlPasteValues
 
 End Sub
 Sub f6()
     Dim lin_f As Long
-    lin_f = ContaLinhas(Sheets("RelatÛrio_Estoque_Demanda").Range("A:A")) + 2
+    lin_f = ContaLinhas(Sheets("Relat√≥rio_Estoque_Demanda").Range("A:A")) + 2
     
     'Controle de Qualidade KG
-    Sheets("RelatÛrio_Estoque_Demanda").Range("L4:L" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C11)"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("L4:L" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("L4:L" & lin_f).PasteSpecial Paste:=xlPasteValues
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("L4:L" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C11)"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("L4:L" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("L4:L" & lin_f).PasteSpecial Paste:=xlPasteValues
     
     'Controle de Qualidade CX
-    Sheets("RelatÛrio_Estoque_Demanda").Range("M4:M" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("M4:M" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("M4:M" & lin_f).PasteSpecial Paste:=xlPasteValues
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("M4:M" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("M4:M" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("M4:M" & lin_f).PasteSpecial Paste:=xlPasteValues
 
 End Sub
 Sub f7()
 
     Dim lin_f As Long
-    lin_f = ContaLinhas(Sheets("RelatÛrio_Estoque_Demanda").Range("A:A")) + 2
+    lin_f = ContaLinhas(Sheets("Relat√≥rio_Estoque_Demanda").Range("A:A")) + 2
         
     'Restrito KG
-    Sheets("RelatÛrio_Estoque_Demanda").Range("N4:N" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C13)"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("N4:N" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("N4:N" & lin_f).PasteSpecial Paste:=xlPasteValues
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("N4:N" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C13)"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("N4:N" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("N4:N" & lin_f).PasteSpecial Paste:=xlPasteValues
     
     'Restrito CX
-    Sheets("RelatÛrio_Estoque_Demanda").Range("O4:O" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("O4:O" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("O4:O" & lin_f).PasteSpecial Paste:=xlPasteValues
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("O4:O" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("O4:O" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("O4:O" & lin_f).PasteSpecial Paste:=xlPasteValues
     
 End Sub
 Sub f8()
 
     Dim lin_f As Long
-    lin_f = ContaLinhas(Sheets("RelatÛrio_Estoque_Demanda").Range("A:A")) + 2
+    lin_f = ContaLinhas(Sheets("Relat√≥rio_Estoque_Demanda").Range("A:A")) + 2
        
     'Bloqueado KG
-    Sheets("RelatÛrio_Estoque_Demanda").Range("P4:P" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C15)"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("P4:P" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("P4:P" & lin_f).PasteSpecial Paste:=xlPasteValues
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("P4:P" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C15)"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("P4:P" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("P4:P" & lin_f).PasteSpecial Paste:=xlPasteValues
     
     'Bloqueado CX
-    Sheets("RelatÛrio_Estoque_Demanda").Range("Q4:Q" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("Q4:Q" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("Q4:Q" & lin_f).PasteSpecial Paste:=xlPasteValues
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("Q4:Q" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("Q4:Q" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("Q4:Q" & lin_f).PasteSpecial Paste:=xlPasteValues
     
 End Sub
 Sub f9()
 
     Dim lin_f As Long
-    lin_f = ContaLinhas(Sheets("RelatÛrio_Estoque_Demanda").Range("A:A")) + 2
+    lin_f = ContaLinhas(Sheets("Relat√≥rio_Estoque_Demanda").Range("A:A")) + 2
     
         
-    'DevoluÁıes KG
-    Sheets("RelatÛrio_Estoque_Demanda").Range("R4:R" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C17)"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("R4:R" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("R4:R" & lin_f).PasteSpecial Paste:=xlPasteValues
+    'Devolu√ß√µes KG
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("R4:R" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C17)"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("R4:R" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("R4:R" & lin_f).PasteSpecial Paste:=xlPasteValues
     
-    'DevoluÁıes CX
-    Sheets("RelatÛrio_Estoque_Demanda").Range("S4:S" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("S4:S" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("S4:S" & lin_f).PasteSpecial Paste:=xlPasteValues
+    'Devolu√ß√µes CX
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("S4:S" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("S4:S" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("S4:S" & lin_f).PasteSpecial Paste:=xlPasteValues
     
 End Sub
 Sub f10()
 
     Dim lin_f As Long
-    lin_f = ContaLinhas(Sheets("RelatÛrio_Estoque_Demanda").Range("A:A")) + 2
+    lin_f = ContaLinhas(Sheets("Relat√≥rio_Estoque_Demanda").Range("A:A")) + 2
     
         
     'Estoque Posicionado
-    Sheets("RelatÛrio_Estoque_Demanda").Range("T4:T" & lin_f).FormulaR1C1 = "=RC[-11]-RC[-16]"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("T4:T" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("T4:T" & lin_f).PasteSpecial Paste:=xlPasteValues
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("T4:T" & lin_f).FormulaR1C1 = "=RC[-11]-RC[-16]"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("T4:T" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("T4:T" & lin_f).PasteSpecial Paste:=xlPasteValues
     
-    'Estoque posicionado + tr‚nsito
-    Sheets("RelatÛrio_Estoque_Demanda").Range("U4:U" & lin_f).FormulaR1C1 = "=(RC[-12]+RC[-10])-RC[-17]"
-    Sheets("RelatÛrio_Estoque_Demanda").Calculate
-    Sheets("RelatÛrio_Estoque_Demanda").Range("U4:U" & lin_f).Copy
-    Sheets("RelatÛrio_Estoque_Demanda").Range("U4:U" & lin_f).PasteSpecial Paste:=xlPasteValues
+    'Estoque posicionado + tr√¢nsito
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("U4:U" & lin_f).FormulaR1C1 = "=(RC[-12]+RC[-10])-RC[-17]"
+    Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("U4:U" & lin_f).Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("U4:U" & lin_f).PasteSpecial Paste:=xlPasteValues
     
 End Sub
 Sub acoes_corte()
@@ -1001,19 +1001,19 @@ Sub acoes_corte()
     Workbooks(arquivo_atual).Sheets("Corte").Select
     ActiveWindow.SelectedSheets.Delete
     
-    Sheets("RelatÛrio_Estoque_Demanda").Range("Z3").FormulaR1C1 = corte_importado
+    Sheets("Relat√≥rio_Estoque_Demanda").Range("Z3").FormulaR1C1 = corte_importado
     
-    'Chama o objeto passando os par‚metros
+    'Chama o objeto passando os par√¢metros
         Set fDlg = application.FileDialog(FileDialogType:=msoFileDialogOpen)
         With fDlg
-            'Alterar esta propriedade para True permitir· a seleÁ„o de v·rios arquivos
+            'Alterar esta propriedade para True permitir√° a sele√ß√£o de v√°rios arquivos
             .AllowMultiSelect = False
     
-            'Determina a forma de visualizaÁ„o dos aruqivos
+            'Determina a forma de visualiza√ß√£o dos aruqivos
             .InitialView = msoFileDialogViewDetails
     
             'Determina qual o drive inicial
-            .InitialFileName = "G:\Vila Anastacio\Dir Food Service\KITs\KITS OPERA«’ES\2019\Kits_2019 Analise Corte"
+            .InitialFileName = "G:\Vila Anastacio\Dir Food Service\KITs\KITS OPERA√á√ïES\2019\Kits_2019 Analise Corte"
         End With
     
 
@@ -1023,11 +1023,11 @@ Sub acoes_corte()
             Workbooks.Open(Filename:=lArquivo, UpdateLinks:=0).RunAutoMacros Which:=xlAutoOpen
             corte_importado = ActiveWorkbook.Name
         Else
-            MsgBox "N„o foi selecionado nenhum arquivo"
+            MsgBox "N√£o foi selecionado nenhum arquivo"
             Exit Sub
         End If
     
-        Workbooks(arquivo_atual).Sheets("RelatÛrio_Estoque_Demanda").Range("Z3").FormulaR1C1 = corte_importado
+        Workbooks(arquivo_atual).Sheets("Relat√≥rio_Estoque_Demanda").Range("Z3").FormulaR1C1 = corte_importado
     
     'Seleciona os dados para copiar
         Workbooks(corte_importado).Activate
@@ -1042,19 +1042,19 @@ Sub acoes_corte()
         Sheets(planilha_corte).Copy Before:=Workbooks(arquivo_atual).Sheets(1)
     
         Dim lin_re As Long
-        lin_re = ContaLinhas(Workbooks(arquivo_atual).Sheets("RelatÛrio_Estoque_Demanda").Range("C:C")) + 1
+        lin_re = ContaLinhas(Workbooks(arquivo_atual).Sheets("Relat√≥rio_Estoque_Demanda").Range("C:C")) + 1
         
         Sheets(planilha_corte).Name = "Corte"
         
-        Workbooks(arquivo_atual).Sheets("RelatÛrio_Estoque_Demanda").Range("Z4:Z" & lin_re).FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(VALUE(RC[-19]),Corte!C2,0),COLUMN(Corte!R1C34),1,1,""corte""),TRUE),""N„o disponÌvel"")"
-        Workbooks(arquivo_atual).Sheets("RelatÛrio_Estoque_Demanda").Calculate
-        Workbooks(arquivo_atual).Sheets("RelatÛrio_Estoque_Demanda").Range("Z4:Z" & lin_re).Copy
-        Worksheets("RelatÛrio_Estoque_Demanda").Select
+        Workbooks(arquivo_atual).Sheets("Relat√≥rio_Estoque_Demanda").Range("Z4:Z" & lin_re).FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(VALUE(RC[-19]),Corte!C2,0),COLUMN(Corte!R1C34),1,1,""corte""),TRUE),""N√£o dispon√≠vel"")"
+        Workbooks(arquivo_atual).Sheets("Relat√≥rio_Estoque_Demanda").Calculate
+        Workbooks(arquivo_atual).Sheets("Relat√≥rio_Estoque_Demanda").Range("Z4:Z" & lin_re).Copy
+        Worksheets("Relat√≥rio_Estoque_Demanda").Select
         Range("Z4").Select
         Selection.PasteSpecial Paste:=xlPasteValues
        
         Workbooks(corte_importado).Close False
-        Sheets("RelatÛrio_Estoque_Demanda").Select
+        Sheets("Relat√≥rio_Estoque_Demanda").Select
         
         Columns("Z:Z").Select
         With Selection
@@ -1071,11 +1071,11 @@ Sub acoes_corte()
         MsgBox "Fim!"
 End Sub
 Sub Tratar_estoque_final()
-    Sheets("RelatÛrio_Estoque_Demanda").Select
+    Sheets("Relat√≥rio_Estoque_Demanda").Select
     Columns("T:U").NumberFormat = "#,##0_);[Red](#,##0)"
-    ActiveWorkbook.Worksheets("RelatÛrio_Estoque_Demanda").AutoFilter.Sort.SortFields.Clear
-    ActiveWorkbook.Worksheets("RelatÛrio_Estoque_Demanda").AutoFilter.Sort.SortFields.Add Key:=Range("U3:U1048576"), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
-    With ActiveWorkbook.Worksheets("RelatÛrio_Estoque_Demanda").AutoFilter.Sort
+    ActiveWorkbook.Worksheets("Relat√≥rio_Estoque_Demanda").AutoFilter.Sort.SortFields.Clear
+    ActiveWorkbook.Worksheets("Relat√≥rio_Estoque_Demanda").AutoFilter.Sort.SortFields.Add Key:=Range("U3:U1048576"), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+    With ActiveWorkbook.Worksheets("Relat√≥rio_Estoque_Demanda").AutoFilter.Sort
         .Header = xlYes
         .MatchCase = False
         .Orientation = xlTopToBottom
@@ -1083,12 +1083,12 @@ Sub Tratar_estoque_final()
         .Apply
     End With
 End Sub
-Sub Copia_RelatÛrio_Estoque()
+Sub Copia_Relat√≥rio_Estoque()
 
-    Sheets("RelatÛrio_Estoque_Demanda").Copy
+    Sheets("Relat√≥rio_Estoque_Demanda").Copy
     ChDir _
-        "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M„e (2019)\RelatÛrio_Estoques"
-    ActiveWorkbook.SaveAs Filename:="G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M„e (2019)\RelatÛrio_Estoques\RelatÛrio_Estoques_e-mail.xlsb", FileFormat:=xlExcel12, CreateBackup:=False
+        "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M√£e (2019)\Relat√≥rio_Estoques"
+    ActiveWorkbook.SaveAs Filename:="G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M√£e (2019)\Relat√≥rio_Estoques\Relat√≥rio_Estoques_e-mail.xlsb", FileFormat:=xlExcel12, CreateBackup:=False
     ActiveWindow.Close
 
 End Sub
@@ -1099,11 +1099,11 @@ Sub mail_marco_estoque()
     Dim OutMail As Object
     
     Dim lin_mail_rf As Long
-    lin_mail_rf = ContaLinhas(Sheets("RelatÛrio_Estoque_Demanda").Range("A:A"))
+    lin_mail_rf = ContaLinhas(Sheets("Relat√≥rio_Estoque_Demanda").Range("A:A"))
 
     Set rng = Nothing
     On Error Resume Next
-    Set rng = Sheets("RelatÛrio_Estoque_Demanda").Range("A2:Z" & lin_mail_rf).SpecialCells(xlCellTypeVisible)
+    Set rng = Sheets("Relat√≥rio_Estoque_Demanda").Range("A2:Z" & lin_mail_rf).SpecialCells(xlCellTypeVisible)
 
     On Error GoTo 0
 
@@ -1128,7 +1128,7 @@ Sub mail_marco_estoque()
         .BCC = ""
         .Subject = Sheets("mail_address").Range("D8").Value
         .HTMLBody = Sheets("mail_address").Range("E8").Value & RangetoHTML(rng)
-        .Attachments.Add ("G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M„e (2019)\RelatÛrio_Estoques\RelatÛrio_Estoques_e-mail.xlsb")
+        .Attachments.Add ("G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M√£e (2019)\Relat√≥rio_Estoques\Relat√≥rio_Estoques_e-mail.xlsb")
         .Send   'or use .Display
     End With
     On Error GoTo 0
@@ -1160,7 +1160,7 @@ Sub Criar_Lista_Z9139()
             arquivo_base = ActiveWorkbook.Name
             SAP_Logon
     
-        'InstruÁ„o para executar o SAP
+        'Instru√ß√£o para executar o SAP
 
         
             Dim WSHShell, SAPGUIPath, SID, InstanceNo, WinTitle, SapGuiAuto, application, connection, session
@@ -1190,24 +1190,24 @@ Sub Criar_Lista_Z9139()
             
         'Processo para filtrar a planilha
             'Filtrar Z9139
-            'ComeÁa na planilha certa para evitar erros
+            'Come√ßa na planilha certa para evitar erros
             Sheets("Z9D19N").Select
         
-            'Filtrar Z9D19N sÛ com BLOQ + KIT_BQ
+            'Filtrar Z9D19N s√≥ com BLOQ + KIT_BQ
                 'Conta linhas da Z9D19N para saber quanto deve ser filtrado
                     Dim qtd_linhas_z9d19n As Double
                     qtd_linhas_z9d19n = ContaLinhas(Sheets("z9d19n").Range("$A:$A"))
-                'Testa se È possÌvel filtrar a planilha
+                'Testa se √© poss√≠vel filtrar a planilha
                     If Not ActiveSheet.AutoFilterMode Then
                         ActiveSheet.Range("A1").AutoFilter
                     End If
-                'Testa se a planilha est· filtrada
+                'Testa se a planilha est√° filtrada
                     If ActiveSheet.FilterMode Then
                         ActiveSheet.ShowAllData
                     End If
-                'Filtra sÛ os casos BLOQ + KIT_BQ para consulta no SAP
+                'Filtra s√≥ os casos BLOQ + KIT_BQ para consulta no SAP
                     Sheets("z9d19n").Range("$A$1:$T$" & qtd_linhas_z9d19n).AutoFilter Field:=23, Criteria1:="=BLOQ", Operator:=xlOr, Criteria2:="=KIT_BQ"
-                'Seleciona apenas as cÈlulas visÌveis
+                'Seleciona apenas as c√©lulas vis√≠veis
                     Sheets("z9d19n").Range("$A$2:$A$" & qtd_linhas_z9d19n).SpecialCells(xlCellTypeVisible).Select
                 'Copia os dados selecionados
                     Selection.Copy
@@ -1215,11 +1215,11 @@ Sub Criar_Lista_Z9139()
         'Cola as ordens selecionadas
             session.findById("wnd[1]").maximize
             session.findById("wnd[1]/tbar[0]/btn[24]").press
-        'Envia as ordens para seleÁ„o
+        'Envia as ordens para sele√ß√£o
             session.findById("wnd[1]/tbar[0]/btn[8]").press
         'Altera o limitador de 500 resultados para sem limite
             session.findById("wnd[0]/usr/txtMAX_SEL").Text = ""
-        'Executar o relatÛrio
+        'Executar o relat√≥rio
             session.findById("wnd[0]/tbar[1]/btn[8]").press
             
         'Exportar dados
@@ -1233,7 +1233,7 @@ Sub Criar_Lista_Z9139()
             Range("A1").Select
             ActiveSheet.PasteSpecial Format:="Texto unicode", Link:=False, DisplayAsIcon:=False, NoHTMLFormatting:=True
             
-        'CÛdigo para fechar as sessıes do SAP
+        'C√≥digo para fechar as sess√µes do SAP
             While connection.Children.Count > 0
                 Set MySession = connection.Children(0)
                 MySession.findById("wnd[0]").Close
@@ -1242,12 +1242,12 @@ Sub Criar_Lista_Z9139()
                 On Error GoTo 0
             Wend
             
-        'Garantir que est· na planilha certa
+        'Garantir que est√° na planilha certa
             Sheets("z9139").Activate
-        'Apagar linhas e colunas desnecess·rias
+        'Apagar linhas e colunas desnecess√°rias
             Range("1:3,5:5").Delete shift:=xlUp
             
-        'Tratar importaÁ„o
+        'Tratar importa√ß√£o
             Columns("A:A").Select
             Selection.TextToColumns Destination:=Range("A1"), DataType:=xlDelimited, _
             TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=False, _
@@ -1269,35 +1269,35 @@ Sub Criar_Lista_Z9139()
                     ultima_linha_z9139 = ContaLinhas(Sheets("z9139").Range("A:A"))
         
             'PARTE A (DATA BLOQUEIO)
-                'Preenche com fÛrmula para corrigir formato da data
+                'Preenche com f√≥rmula para corrigir formato da data
                     Range("Q2").FormulaR1C1 = "=IF(ISNUMBER(RC[-11]),RC[-11],DATEVALUE(RC[-11]))"
-                'Colar a fÛrmula
+                'Colar a f√≥rmula
                     Range("Q2").AutoFill Destination:=Range("Q2:Q" & ultima_linha_z9139)
                     ActiveSheet.Calculate
-                'Colar a fÛrmula no lugar correto
+                'Colar a f√≥rmula no lugar correto
                     Range("Q2:Q" & ultima_linha_z9139).Copy
                     Range("F2:F" & ultima_linha_z9139).PasteSpecial Paste:=xlPasteValues
                 
-            'PARTE B (DATA ATUALIZA«√O)
-                'Preenche com fÛrmula para corrigir formato da data
+            'PARTE B (DATA ATUALIZA√á√ÉO)
+                'Preenche com f√≥rmula para corrigir formato da data
                     Range("Q2").FormulaR1C1 = "=IF(ISNUMBER(RC[-2]),RC[-2],DATEVALUE(RC[-2]))"
-                'Atualizar a fÛrmula
+                'Atualizar a f√≥rmula
                     Range("Q2").AutoFill Destination:=Range("Q2:Q" & ultima_linha_z9139)
                     ActiveSheet.Calculate
-                'Colar a fÛrmula no lugar correto
+                'Colar a f√≥rmula no lugar correto
                     Range("Q2:Q" & ultima_linha_z9139).Copy
                     Range("O2:O" & ultima_linha_z9139).PasteSpecial Paste:=xlPasteValues
                     
-            'Parte C (zerar fÛrmula)
+            'Parte C (zerar f√≥rmula)
                     Range("Q:Q").Clear
                     
-            'Parte D (criar outras fÛrmulas)
-            'Criar fÛrmulas
-                Range("Q1").FormulaR1C1 = "CÛdigo e Nome do Erro"
-                Range("R1").FormulaR1C1 = "¡rea Solucionadora"
-                Range("S1").FormulaR1C1 = "N˙mero Vendedor"
+            'Parte D (criar outras f√≥rmulas)
+            'Criar f√≥rmulas
+                Range("Q1").FormulaR1C1 = "C√≥digo e Nome do Erro"
+                Range("R1").FormulaR1C1 = "√Årea Solucionadora"
+                Range("S1").FormulaR1C1 = "N√∫mero Vendedor"
                 Range("T1").FormulaR1C1 = "Nome do Vendedor"
-                Range("U1").FormulaR1C1 = "Regi„o"
+                Range("U1").FormulaR1C1 = "Regi√£o"
                 Range("V1").FormulaR1C1 = "Time de Venda"
                 Range("W1").FormulaR1C1 = "Data da Remessa"
                 Range("X1").FormulaR1C1 = "Status Pedido"
@@ -1305,12 +1305,12 @@ Sub Criar_Lista_Z9139()
                 
                 Range("Q2").FormulaR1C1 = "=RC[-13]&"" - ""&PROPER(INDIRECT(ADDRESS(MATCH(RC[-13],depara_cod_bloq_sap!C1,0),2,1,1,""depara_cod_bloq_sap""),TRUE))"
                 Range("R2").FormulaR1C1 = "=PROPER(INDIRECT(ADDRESS(MATCH(RC[-14],depara_cod_bloq_sap!C1,0),3,1,1,""depara_cod_bloq_sap""),TRUE))"
-                Range("S2").FormulaR1C1 = "=IFNA(VALUE(INDIRECT(ADDRESS(MATCH(RC[-17],Z9D19N!C1,0),24,1,1,""z9d19n""),TRUE)),""OV n„o localizada"")"
-                Range("T2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(VALUE(RC[-1]),depara_vendedores!C1,0),2,1,1,""depara_vendedores""),TRUE),""Vendedor n„o localizado"")"
-                Range("U2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(VALUE(RC[-2]),depara_vendedores!C1,0),4,1,1,""depara_vendedores""),TRUE),""Vendedor n„o localizado"")"
-                Range("V2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(VALUE(RC[-3]),depara_vendedores!C1,0),3,1,1,""depara_vendedores""),TRUE),""Vendedor n„o localizado"")"
-                Range("W2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(RC[-21],z9d19n!C1,0),17,1,1,""z9d19n""),TRUE),""OV n„o localizada"")"
-                Range("X2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(RC[-22],z9d19n!C1,0),23,1,1,""z9d19n""),TRUE),""OV n„o localizada"")"
+                Range("S2").FormulaR1C1 = "=IFNA(VALUE(INDIRECT(ADDRESS(MATCH(RC[-17],Z9D19N!C1,0),24,1,1,""z9d19n""),TRUE)),""OV n√£o localizada"")"
+                Range("T2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(VALUE(RC[-1]),depara_vendedores!C1,0),2,1,1,""depara_vendedores""),TRUE),""Vendedor n√£o localizado"")"
+                Range("U2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(VALUE(RC[-2]),depara_vendedores!C1,0),4,1,1,""depara_vendedores""),TRUE),""Vendedor n√£o localizado"")"
+                Range("V2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(VALUE(RC[-3]),depara_vendedores!C1,0),3,1,1,""depara_vendedores""),TRUE),""Vendedor n√£o localizado"")"
+                Range("W2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(RC[-21],z9d19n!C1,0),17,1,1,""z9d19n""),TRUE),""OV n√£o localizada"")"
+                Range("X2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(RC[-22],z9d19n!C1,0),23,1,1,""z9d19n""),TRUE),""OV n√£o localizada"")"
             
                 Range("Q2:X2").Copy
                 
@@ -1324,7 +1324,7 @@ Sub Criar_Lista_Z9139()
                 'Range("Q2:X" & qtd_linhas).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
                 
                     
-            'Parte D (formatar como data no meio da cÈlular)
+            'Parte D (formatar como data no meio da c√©lular)
                     Columns("F:F").Select
                     Selection.NumberFormat = "dd/mm/yy"
                     Columns("O:O").Select
@@ -1332,7 +1332,7 @@ Sub Criar_Lista_Z9139()
                     Columns("W:W").Select
                     Selection.NumberFormat = "dd/mm/yy"
                     
-            'Tratar o tÌtulo
+            'Tratar o t√≠tulo
                 Range("A1:X1").Select
                 With Selection.Interior
                     .Pattern = xlSolid
@@ -1384,15 +1384,15 @@ End Sub
 
 Sub minilistas()
 
-'Deletar relatÛrios antig'os
+'Deletar relat√≥rios antig'os
     On Error Resume Next
-    Kill ("G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M„e (2019)\G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M„e (2019)\RelatÛrios-Gerados(Bloq_Kit_BQ)\*.xl*")
+    Kill ("G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M√£e (2019)\G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M√£e (2019)\Relat√≥rios-Gerados(Bloq_Kit_BQ)\*.xl*")
 
 'Dimensionar quantidade de linhas
     Dim qtd_lin_z9139 As Double
     qtd_lin_z9139 = ContaLinhas(Sheets("z9139").Range("$A:$A"))
 
-'Steps para apagar as cÈlulas
+'Steps para apagar as c√©lulas
     Sheets("z9139 (Cust)").Select
     Cells.Select
     Selection.Clear
@@ -1409,7 +1409,7 @@ Sub minilistas()
     Cells.Select
     Selection.Clear
 
-'Filtrar e criar a lista de finanÁas
+'Filtrar e criar a lista de finan√ßas
     Sheets("z9139").Select
     Sheets("z9139").Range("$A$1:$X$" & qtd_lin_z9139).AutoFilter Field:=18, Criteria1:="Financeiro"
     Range("A1:X" & qtd_lin_z9139).Select
@@ -1507,8 +1507,8 @@ Sub minilistas()
         Sheets(Sheet_Copiar).Select
         Sheets(Sheet_Copiar).Copy
         
-        ChDir "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M„e (2019)\RelatÛrios-Gerados(Bloq_Kit_BQ)"
-        ActiveWorkbook.SaveAs Filename:="G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M„e (2019)\RelatÛrios-Gerados(Bloq_Kit_BQ)\" _
+        ChDir "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M√£e (2019)\Relat√≥rios-Gerados(Bloq_Kit_BQ)"
+        ActiveWorkbook.SaveAs Filename:="G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M√£e (2019)\Relat√≥rios-Gerados(Bloq_Kit_BQ)\" _
             & "KIT_BQ+BLOQ " & Equipe & ".xlsb", _
             FileFormat:=xlExcel12, CreateBackup:=False
         ActiveWorkbook.Close savechanges = False
@@ -1528,7 +1528,7 @@ Sub mail_motivos()
     Dim caminho As String
 
     For linha = 3 To 7
-        caminho = "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M„e (2019)\RelatÛrios-Gerados(Bloq_Kit_BQ)\"
+        caminho = "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M√£e (2019)\Relat√≥rios-Gerados(Bloq_Kit_BQ)\"
         nome_anexo = Sheets("mail_address").Cells(linha, 6).Value & ".xlsb"
         
     Dim lt As Double
@@ -1596,7 +1596,7 @@ Loop
 Set WSHShell = Nothing
 Set SapGui = GetObject("SAPGUI")
 Set Applic = SapGui.GetScriptingEngine
-Set connection = Applic.OpenConnection("01 [BRF] - SAP ECC ProduÁ„o -->Logon Autom·tico<---", True)
+Set connection = Applic.OpenConnection("01 [BRF] - SAP ECC Produ√ß√£o -->Logon Autom√°tico<---", True)
 Set session = connection.Children(0)
 
 End Sub
@@ -1619,22 +1619,22 @@ Public Sub impo2()
        WScript.ConnectObject application, "on"
     End If
     
-    'Maximizar a tela (quando j· fez logon)
+    'Maximizar a tela (quando j√° fez logon)
     session.findById("wnd[0]").maximize
-    'Digitar o cÛdigo do relatÛrio na barra inicial
+    'Digitar o c√≥digo do relat√≥rio na barra inicial
     session.findById("wnd[0]/tbar[0]/okcd").Text = "z9d19n"
-    'Clicar no bot„o para abrir a transaÁ„o
+    'Clicar no bot√£o para abrir a transa√ß√£o
     session.findById("wnd[0]/tbar[0]/btn[0]").press
-    'Clicar no bot„o para filtrar o campo "tipo de documento de vendas"
+    'Clicar no bot√£o para filtrar o campo "tipo de documento de vendas"
     session.findById("wnd[0]/usr/btn%_S_AUART_%_APP_%-VALU_PUSH").press
     'Abre janela da data
     session.findById("wnd[0]").sendVKey 4
-    'aperta o bot„o ok para guardar a data de inÌcio
+    'aperta o bot√£o ok para guardar a data de in√≠cio
     session.findById("wnd[1]/tbar[0]/btn[0]").press
     'Clica no campo e digita YKIT no campo "tipo doc de vendas"
     session.findById("wnd[0]/usr/ctxtS_AUART-LOW").SetFocus
     session.findById("wnd[0]/usr/ctxtS_AUART-LOW").Text = "YKIT"
-    'Digita 18* na organizaÁ„o de vendas
+    'Digita 18* na organiza√ß√£o de vendas
     session.findById("wnd[0]/usr/ctxtS_VKORG-LOW").Text = "18*"
     'Abrir janela para digitar os tipos de documento
     session.findById("wnd[0]/usr/btn%_S_AUART_%_APP_%-VALU_PUSH").press
@@ -1644,14 +1644,14 @@ Public Sub impo2()
     session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,1]").Text = "YKIV"
     'Digitar o primeiro tipo de doc - Z371
     session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,2]").Text = "Z371"
-    'Apertar o bot„o para fechar a janela
+    'Apertar o bot√£o para fechar a janela
     session.findById("wnd[1]/tbar[0]/btn[8]").press
     'Digita a data final no campo correto
     session.findById("wnd[0]/usr/ctxtS_ERDAT-HIGH").Text = "31.12.2019"
     session.findById("wnd[0]/usr/ctxtS_ERDAT-LOW").Text = "01.08.2019"
     'Colocar o layout correto
     session.findById("wnd[0]/usr/ctxtVARIANT").Text = "/BRUNO"
-    'Resto do cÛdigo para filtrar
+    'Resto do c√≥digo para filtrar
     session.findById("wnd[0]/usr/ctxtS_VTWEG-LOW").Text = "01"
     session.findById("wnd[0]/usr/ctxtS_SPART-LOW").Text = "01"
     session.findById("wnd[0]/usr/ctxtS_STATIT-LOW").SetFocus
@@ -1688,7 +1688,7 @@ Public Sub impo2()
     session.findById("wnd[1]/tbar[0]/btn[8]").press
     session.findById("wnd[2]/tbar[0]/btn[0]").press
 
-    'executar o relatÛrio
+    'executar o relat√≥rio
     session.findById("wnd[0]/tbar[1]/btn[8]").press
     
     'processo para exportar para Excel
@@ -1703,7 +1703,7 @@ Public Sub impo2()
     Range("A1").Select
     ActiveSheet.PasteSpecial Format:="Texto unicode", Link:=False, DisplayAsIcon:=False, NoHTMLFormatting:=True
     
-    'CÛdigo para fechar as sessıes do SAP
+    'C√≥digo para fechar as sess√µes do SAP
             While connection.Children.Count > 0
                 Set MySession = connection.Children(0)
                 MySession.findById("wnd[0]").Close
@@ -1711,7 +1711,7 @@ Public Sub impo2()
                 MySession.findById("wnd[1]/usr/btnSPOP-OPTION1").press
                 On Error GoTo 0
             Wend
-    'registra hor·rio do relatÛrio
+    'registra hor√°rio do relat√≥rio
     grava_hora_z9d19n
     
 'Tratar dados importados
@@ -1777,10 +1777,10 @@ Public Sub impo2()
     
     Sheets("Z9D19N").Range("AS1").FormulaR1C1 = "Flag PaP"
     Sheets("Z9D19N").Range("AT1").FormulaR1C1 = "Time"
-    Sheets("Z9D19N").Range("AU1").FormulaR1C1 = "Regi„o"
+    Sheets("Z9D19N").Range("AU1").FormulaR1C1 = "Regi√£o"
     Sheets("Z9D19N").Range("AV1").FormulaR1C1 = "Nome Vendedor"
     
-    Sheets("Z9D19N").Range("AS2").FormulaR1C1 = "=IF(ISNA(MATCH(VALUE(RC[-17]),depara_portaporta!C1,0)),""N„o È Porta a Porta"",""Porta a Porta"")"
+    Sheets("Z9D19N").Range("AS2").FormulaR1C1 = "=IF(ISNA(MATCH(VALUE(RC[-17]),depara_portaporta!C1,0)),""N√£o √© Porta a Porta"",""Porta a Porta"")"
     Sheets("Z9D19N").Range("AT2").FormulaR1C1 = "=INDIRECT(ADDRESS(MATCH(VALUE(RC[-22]),depara_vendedores!C1,0),3,1,1,""depara_vendedores""),TRUE)"
     Sheets("Z9D19N").Range("AU2").FormulaR1C1 = "=INDIRECT(ADDRESS(MATCH(VALUE(RC[-23]),depara_vendedores!C1,0),4,1,1,""depara_vendedores""),TRUE)"
     Sheets("Z9D19N").Range("AV2").FormulaR1C1 = "=INDIRECT(ADDRESS(MATCH(VALUE(RC[-24]),depara_vendedores!C1,0),2,1,1,""depara_vendedores""),TRUE)"
@@ -1840,8 +1840,8 @@ End Sub
 Sub exp_Z9D19N()
     Sheets("Z9D19N").Copy
     ChDir _
-        "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M„e (2019)\ExtraÌdo_SAP"
-    ActiveWorkbook.SaveAs Filename:="G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M„e (2019)\ExtraÌdo_SAP\Z9D19N.xlsb", FileFormat:=xlExcel12, CreateBackup:=False
+        "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M√£e (2019)\Extra√≠do_SAP"
+    ActiveWorkbook.SaveAs Filename:="G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M√£e (2019)\Extra√≠do_SAP\Z9D19N.xlsb", FileFormat:=xlExcel12, CreateBackup:=False
     Workbooks("Z9D19N").Close
 End Sub
 Sub mail_marco_Z9D19N()
@@ -1877,7 +1877,7 @@ Sub mail_marco_Z9D19N()
         .BCC = ""
         .Subject = Sheets("mail_address").Range("D2").Value
         .HTMLBody = Sheets("mail_address").Range("E2").Value & RangetoHTML(rng)
-        .Attachments.Add ("G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M„e (2019)\ExtraÌdo_SAP\Z9D19N.xlsb")
+        .Attachments.Add ("G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-M√£e (2019)\Extra√≠do_SAP\Z9D19N.xlsb")
         .Send   'or use .Display
     End With
     On Error GoTo 0
