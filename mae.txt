@@ -1,0 +1,1974 @@
+Sub ult_lin()
+    Sheets("Consolidação_CDs").Range("A1048559").Select
+    Selection.End(xlUp).Select
+End Sub
+
+Sub simples()
+    
+    Dim fDlg As FileDialog
+    Dim lArquivo As String
+    Dim arquivo_importado As String
+    Dim wkbname As String
+    wkbname = ActiveWorkbook.Name
+    
+    'Chama o objeto passando os parâmetros
+        Set fDlg = application.FileDialog(FileDialogType:=msoFileDialogOpen)
+        With fDlg
+            'Alterar esta propriedade para True permitirá a seleção de vários arquivos
+            .AllowMultiSelect = False
+    
+            'Determina a forma de visualização dos aruqivos
+            .InitialView = msoFileDialogViewDetails
+    
+            'Determina qual o drive inicial
+            .InitialFileName = "C:\Users\656877\Desktop\8. Backup do Bruno\Controle de Efetividade\"
+        End With
+        
+    'Retorna o arquivo selecionado
+        If fDlg.Show = -1 Then
+            lArquivo = fDlg.SelectedItems(1)
+            Workbooks.Open(Filename:=lArquivo, UpdateLinks:=0).RunAutoMacros Which:=xlAutoOpen
+            arquivo_importado = ActiveWorkbook.Name
+        Else
+            MsgBox "Nenhum arquivo foi selecionado. Importação cancelada."
+            Exit Sub
+        End If
+        
+        Workbooks(arquivo_importado).Activate
+        ActiveSheet.Select
+        
+    'Testa filtro
+        'Testa se é possível filtrar a planilha
+            Workbooks(arquivo_importado).ActiveSheet.Select
+            If Not Workbooks(arquivo_importado).ActiveSheet.AutoFilterMode Then
+                Workbooks(arquivo_importado).ActiveSheet.Range("A1:CD1048576").AutoFilter
+            End If
+        'Testa se a planilha está filtrada
+            If Workbooks(arquivo_importado).ActiveSheet.FilterMode Then
+                Workbooks(arquivo_importado).ActiveSheet.ShowAllData
+            End If
+            
+    'Seleciona os dados para copiar
+        Workbooks(arquivo_importado).Activate
+        ActiveSheet.Select
+        Cells.EntireColumn.Hidden = False
+    'localizador de última coluna
+        Range("XFD1").Select
+        Selection.End(xlToLeft).Select
+        atual_coluna = ActiveCell.Column
+    'localizador de linha
+        Range("A1048576").Select
+        Selection.End(xlUp).Select
+        atual_linha = ActiveCell.Row
+    'Selecionar o range correto
+        ult_lincol = Cells(atual_linha, atual_coluna).Address
+        Range("A1:" & ult_lincol).Select
+        
+        Selection.Copy
+        
+    'Cola
+        Workbooks(wkbname).Activate
+        Sheets("Consolidação_CDs").Select
+        Range("B1048559").Select
+        Selection.End(xlUp).Select
+        ActiveCell.Offset(1, 0).Select
+        ActiveCell.PasteSpecial Paste:=xlPasteValues
+        
+    application.CutCopyMode = False
+    Workbooks("arquivo_importado").Close False
+
+'Tratamento dos dados importados
+
+End Sub
+Sub abrir_generico_cd()
+
+    application.Calculation = xlManual
+
+    Dim fDlg As FileDialog
+    Dim lArquivo As String
+    Dim nome_planilha As String
+    Dim wkbname As String
+    wkbname = "Controle-Mãe_V7.xlsb"
+    
+    'Zera flag do erro
+    Workbooks(wkbname).Worksheets("Interpretador_CDs").Range("C1").FormulaR1C1 = ""
+        
+    'Chama o objeto passando os parâmetros
+        Set fDlg = application.FileDialog(FileDialogType:=msoFileDialogOpen)
+        With fDlg
+            'Alterar esta propriedade para True permitirá a seleção de vários arquivos
+            .AllowMultiSelect = False
+    
+            'Determina a forma de visualização dos aruqivos
+            .InitialView = msoFileDialogViewDetails
+    
+            'Determina qual o drive inicial
+            .InitialFileName = "C:\Users\656877\Desktop\8. Backup do Bruno\Controle de Efetividade\"
+        End With
+        
+    'Retorna o arquivo selecionado
+        If fDlg.Show = -1 Then
+            lArquivo = fDlg.SelectedItems(1)
+            Workbooks.Open(Filename:=lArquivo, UpdateLinks:=0).RunAutoMacros Which:=xlAutoOpen
+            nome_planilha = ActiveWorkbook.Name
+        Else
+            MsgBox "Nenhum arquivo foi selecionado. Importação cancelada."
+            Exit Sub
+        End If
+        
+    form_check_cd.Show
+    Calculate
+    form_check_cd.Hide
+    Workbooks(wkbname).Activate
+    
+    
+    Workbooks(wkbname).Worksheets("Interpretador_CDs").Calculate
+    
+    'Testa as condições para verificar se dá para importar
+    If Workbooks(wkbname).Worksheets("Interpretador_CDs").Range("C1").Value = "STOP" Then
+        MsgBox "Houve uma falha na importação. Favor verificar os dados registrados."
+        Exit Sub
+    Else
+        Workbooks(wkbname).Worksheets("Interpretador_CDs").Range("C1").Value = ""
+    End If
+    
+    If Workbooks(wkbname).Worksheets("Interpretador_CDs").Range("C5").Value <= 0 Then
+        MsgBox "Faltou selecionar pelo menos 1 Centro de Distribuição. Favor reiniciar importação."
+        Exit Sub
+    End If
+    
+    If Workbooks(wkbname).Worksheets("Interpretador_CDs").Range("C2").Value <= 0 Then
+        MsgBox "O período não foi selecionado. Favor reiniciar importação."
+        Exit Sub
+    End If
+    
+    If Workbooks(wkbname).Worksheets("Interpretador_CDs").Range("C4").Value <= 0 Then
+        MsgBox "Faltou preencher a data de referência. Favor reiniciar importação."
+        Exit Sub
+    End If
+        
+    'Conta a quantidade de linhas preenchidas
+    Dim linhas_importadas As Double
+    linhas_importadas = (ContaLinhas(Workbooks(wkbname).Worksheets("CDs_Temporário").Range("A:A"))) + 1000
+    
+    'Testa se a planilha importada para ver se está filtrada
+        If Workbooks(nome_planilha).ActiveSheet.FilterMode Then
+            Workbooks(nome_planilha).ActiveSheet.ShowAllData
+        End If
+    
+    'Testa se é possível filtrar a planilha
+        If Not Workbooks(nome_planilha).ActiveSheet.AutoFilterMode Then
+            Workbooks(nome_planilha).ActiveSheet.Range("A1:BZ" & linha_importada).AutoFilter
+        End If
+   
+    Workbooks(wkbname).Activate
+    Sheets("CDs_Temporário").Select
+    Cells.Clear
+        
+    'Seleciona os dados para copiar
+        Workbooks(nome_planilha).Activate
+        Sheets("base").Select
+        Cells.EntireColumn.Hidden = False
+        Range("A1:AU" & linhas_importadas).Select
+        Selection.Copy
+        
+    'Colar no lugar temporário
+        Workbooks(wkbname).Activate
+        Sheets("CDs_Temporário").Select
+        Range("A1").PasteSpecial Paste:=xlPasteValues
+        
+    'Criar Filtro
+        Selection.AutoFilter
+        Columns("A:AU").AutoFit
+        Range("A1").Select
+        
+    'Fechar arquivo importado
+        Workbooks(nome_planilha).Close False
+    
+    'Obter a info sobre se existe o cd do input na planilha que foi importada (validador de CDs)
+        Dim linha_pesquisa As Double, linha_cd_matriz As Integer, check_filha As Boolean, qlf As Double, qlm As Double, cod_cd As Double
+        Dim wbkname As String
+        
+        linha_pesquisa = 2 'linha que começa a busca na planilha CDs Temporários
+        linha_cd_matriz = 6 'linha que começa a busca na planilha Interpretador de CDs
+        check_filha = False
+        qlf = 0 'Contador de execuções de um mesmo CD em planilhas distintas
+        qlm = 0 'Contador de execução de buscas de CDs distintos procurados na planilha filha
+        qlm_max = Sheets("Interpretador_CDs").Range("C5").Value
+        cod_cd = Sheets("Interpretador_CDs").Range("A" & linha_cd_matriz).Value
+        col_cd = Sheets("Interpretador_CDs").Range("E6").Value
+    
+        Do ' Loop do CD
+            MsgBox "Iniciando busca mãe # " & qlm
+            Do 'Loop da busca do CD
+                qlf = qlf + 1
+                MsgBox "Contador filho na execução # " & qlf
+                If cod_cd = Sheets("CDs_Temporário").Cells(linha_pesquisa, col_cd).Value Then
+                    MsgBox "CD " & cod_cd & " encontrado na planilha, na linha " & linha_pesquisa & " e coluna " & col_cd & "."
+                    check_filha = True
+                    Exit Do
+                Else
+                    check_filha = False
+                End If
+                 linha_pesquisa = linha_pesquisa + 1
+            Loop While qlf <= 9 'ou usar linhas_importadas
+            qlm = qlm + 1 'adiciona uma volta no contador do Loop dos CDs
+            linha_cd_matriz = linha_cd_matriz + 1 'adiciona uma linha, para buscar o próximo CD
+        Loop Until qlm = qlm_max
+            
+        If check_filha = False Then
+            Sheets("Interpretador_CDs").Range("E8").FormulaR1C1 = "Não"
+            Sheets("CDs_Temporário").Select
+            Cells.Clear
+            Sheets("Controle_CDs").Select
+            MsgBox "Não encontramos todos os CDs selecioandos - Finalizando processo!"
+            Exit Sub
+        Else
+            Sheets("Interpretador_CDs").Range("E8").FormulaR1C1 = "Sim"
+            Sheets("Controle_CDs").Select
+            MsgBox "Encontramos todos os CDs selecionados! Só falta tratar."
+        End If
+  
+    MsgBox "até aqui chegou no fim..."
+            
+End Sub
+
+
+Sub impo()
+    
+    SAP_Logon
+    
+    Sheets("Z9D19N").Cells.Clear
+        
+    Dim WSHShell, SAPGUIPath, SID, InstanceNo, WinTitle, SapGuiAuto, application, connection, session
+    
+    If Not IsObject(application) Then
+       Set SapGuiAuto = GetObject("SAPGUI")
+       Set application = SapGuiAuto.GetScriptingEngine
+    End If
+    If Not IsObject(connection) Then
+       Set connection = application.Children(0)
+    End If
+    If Not IsObject(session) Then
+       Set session = connection.Children(0)
+    End If
+    If IsObject(WScript) Then
+       WScript.ConnectObject session, "on"
+       WScript.ConnectObject application, "on"
+    End If
+    
+    'Maximizar a tela (quando já fez logon)
+    session.findById("wnd[0]").maximize
+    'Digitar o código do relatório na barra inicial
+    session.findById("wnd[0]/tbar[0]/okcd").Text = "z9d19n"
+    'Clicar no botão para abrir a transação
+    session.findById("wnd[0]/tbar[0]/btn[0]").press
+    'Clicar no botão para filtrar o campo "tipo de documento de vendas"
+    session.findById("wnd[0]/usr/btn%_S_AUART_%_APP_%-VALU_PUSH").press
+    'Abre janela da data
+    session.findById("wnd[0]").sendVKey 4
+    'aperta o botão ok para guardar a data de início
+    session.findById("wnd[1]/tbar[0]/btn[0]").press
+    'Clica no campo e digita YKIT no campo "tipo doc de vendas"
+    session.findById("wnd[0]/usr/ctxtS_AUART-LOW").SetFocus
+    session.findById("wnd[0]/usr/ctxtS_AUART-LOW").Text = "YKIT"
+    'Digita 18* na organização de vendas
+    session.findById("wnd[0]/usr/ctxtS_VKORG-LOW").Text = "18*"
+    'Abrir janela para digitar os tipos de documento
+    session.findById("wnd[0]/usr/btn%_S_AUART_%_APP_%-VALU_PUSH").press
+    'Digitar o primeiro tipo de doc - YKIT
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,0]").Text = "YKIT"
+    'Digitar o segundo tipo de doc - YKIV
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,1]").Text = "YKIV"
+    'Digitar o primeiro tipo de doc - Z371
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,2]").Text = "Z371"
+    'Apertar o botão para fechar a janela
+    session.findById("wnd[1]/tbar[0]/btn[8]").press
+    'Digita a data final no campo correto
+    session.findById("wnd[0]/usr/ctxtS_ERDAT-HIGH").Text = "31.12.2019"
+    session.findById("wnd[0]/usr/ctxtS_ERDAT-LOW").Text = "01.08.2019"
+    'Colocar o layout correto
+    session.findById("wnd[0]/usr/ctxtVARIANT").Text = "/BRUNO"
+    'Resto do código para filtrar
+    session.findById("wnd[0]/usr/ctxtS_VTWEG-LOW").Text = "01"
+    session.findById("wnd[0]/usr/ctxtS_SPART-LOW").Text = "01"
+    session.findById("wnd[0]/usr/ctxtS_STATIT-LOW").SetFocus
+    session.findById("wnd[0]/usr/ctxtS_STATIT-LOW").caretPosition = 0
+    session.findById("wnd[0]").sendVKey 4
+    session.findById("wnd[1]/usr/lbl[1,16]").SetFocus
+    session.findById("wnd[1]/usr/lbl[1,16]").caretPosition = 4
+    session.findById("wnd[1]").sendVKey 2
+    session.findById("wnd[0]/usr/btn%_S_STATIT_%_APP_%-VALU_PUSH").press
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/btnRSCSEL_255-SOP_I[0,0]").SetFocus
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/btnRSCSEL_255-SOP_I[0,0]").press
+    session.findById("wnd[2]/usr/cntlOPTION_CONTAINER/shellcont/shell").setCurrentCell 5, "TEXT"
+    session.findById("wnd[2]/usr/cntlOPTION_CONTAINER/shellcont/shell").selectedRows = "5"
+    session.findById("wnd[2]/usr/cntlOPTION_CONTAINER/shellcont/shell").doubleClickCurrentCell
+    session.findById("wnd[1]/tbar[0]/btn[8]").press
+    
+    'executar o relatório
+    session.findById("wnd[0]/tbar[1]/btn[8]").press
+    
+    'processo para exportar para Excel
+    session.findById("wnd[0]").maximize
+    session.findById("wnd[0]/shellcont[1]/shell").pressToolbarContextButton "&MB_EXPORT"
+    session.findById("wnd[0]/shellcont[1]/shell").selectContextMenuItem "&PC"
+    session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[4,0]").Select
+    session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[4,0]").SetFocus
+    session.findById("wnd[1]/tbar[0]/btn[0]").press
+    
+    Sheets("Z9D19N").Select
+    Range("A1").Select
+    ActiveSheet.PasteSpecial Format:="Texto unicode", Link:=False, DisplayAsIcon:=False, NoHTMLFormatting:=True
+    
+    'Código para fechar as sessões do SAP
+            While connection.Children.Count > 0
+                Set MySession = connection.Children(0)
+                MySession.findById("wnd[0]").Close
+                On Error Resume Next
+                MySession.findById("wnd[1]/usr/btnSPOP-OPTION1").press
+                On Error GoTo 0
+            Wend
+    'registra horário do relatório
+    grava_hora_z9d19n
+    
+'Tratar dados importados
+    Sheets("Z9D19N").Range("1:3,5:5").Delete shift:=xlUp
+    Columns("A:A").Select
+    Selection.TextToColumns Destination:=Range("A1"), DataType:=xlDelimited, _
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=False, _
+        Semicolon:=False, Comma:=False, Space:=False, Other:=True, OtherChar _
+        :="|", FieldInfo:=Array(Array(1, 1), Array(2, 1), Array(3, 1), Array(4, 1), Array(5, _
+        1), Array(6, 1), Array(7, 1), Array(8, 1), Array(9, 1), Array(10, 1), Array(11, 1), Array(12 _
+        , 1), Array(13, 1), Array(14, 1), Array(15, 1), Array(16, 1), Array(17, 1), Array(18, 1), _
+        Array(19, 1), Array(20, 1), Array(21, 1), Array(22, 1), Array(23, 1), Array(24, 1), Array( _
+        25, 1), Array(26, 1), Array(27, 1), Array(28, 1), Array(29, 1), Array(30, 1), Array(31, 1), _
+        Array(32, 1), Array(33, 1), Array(34, 1), Array(35, 1), Array(36, 1), Array(37, 1), Array( _
+        38, 1), Array(39, 1), Array(40, 1), Array(41, 1), Array(42, 1), Array(43, 1), Array(44, 1), _
+        Array(45, 1), Array(46, 1), Array(47, 1), Array(48, 1), Array(49, 1), Array(50, 1), Array( _
+        51, 1), Array(52, 1), Array(53, 1), Array(54, 1), Array(55, 1), Array(56, 1), Array(57, 1), _
+        Array(58, 1), Array(59, 1)), TrailingMinusNumbers:=True
+    Selection.Delete shift:=xlToLeft
+    
+    Columns("B:B").Select
+    Selection.Replace What:=".", Replacement:="/", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+        
+    Columns("S:S").Select
+    Selection.Replace What:=".", Replacement:="/", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Selection.TextToColumns Destination:=Range("S1"), DataType:=xlDelimited, _
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=False, _
+        Semicolon:=False, Comma:=False, Space:=False, Other:=Tr
+    
+    'Tratar data
+    Dim liz As Double
+    liz = ContaLinhas(Sheets("Z9D19N").Range("B2:B1048575")) + 1
+    Debug.Print liz
+    Sheets("Z9D19N").Columns("S:S").Insert shift:=xlToRight
+    Sheets("Z9D19N").Range("S1").FormulaR1C1 = "Dt.Remessa"
+    Sheets("Z9D19N").Range("S2:S" & liz).FormulaR1C1 = "=VALUE(RC[1])"
+    ActiveSheet.Calculate
+    Sheets("Z9D19N").Columns("S:S").Copy
+    Sheets("Z9D19N").Columns("S:S").PasteSpecial Paste:=xlPasteValues
+    Sheets("Z9D19N").Columns("S:S").NumberFormat = "m/d/yyyy"
+
+    Sheets("Z9D19N").Columns("A:A").Insert shift:=xlToRight
+    Sheets("Z9D19N").Range("A1").FormulaR1C1 = Sheets("Z9D19N").Range("b1").Value
+    Sheets("Z9D19N").Range("A2:A" & liz).FormulaR1C1 = "=VALUE(RC[1])"
+    ActiveSheet.Calculate
+    Sheets("Z9D19N").Columns("A:A").Copy
+    Sheets("Z9D19N").Columns("A:A").PasteSpecial Paste:=xlPasteValues
+    Sheets("Z9D19N").Columns("B:B").Delete shift:=xlToLeft
+
+    Sheets("Z9D19N").Columns("Q:R").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("R:R").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("Y:Y").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("AB:AB").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("AG:AG").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("AH:AH").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("AL:AL").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("AN:AP").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("AS:AU").Delete shift:=xlToLeft
+    
+    Sheets("Z9D19N").Range("AS1").FormulaR1C1 = "Flag PaP"
+    Sheets("Z9D19N").Range("AT1").FormulaR1C1 = "Time"
+    Sheets("Z9D19N").Range("AU1").FormulaR1C1 = "Região"
+    Sheets("Z9D19N").Range("AV1").FormulaR1C1 = "Nome Vendedor"
+    
+    Sheets("Z9D19N").Range("AS2").FormulaR1C1 = "=IF(ISNA(MATCH(VALUE(RC[-17]),depara_portaporta!C1,0)),""Não é Porta a Porta"",""Porta a Porta"")"
+    Sheets("Z9D19N").Range("AT2").FormulaR1C1 = "=INDIRECT(ADDRESS(MATCH(VALUE(RC[-22]),depara_vendedores!C1,0),3,1,1,""depara_vendedores""),TRUE)"
+    Sheets("Z9D19N").Range("AU2").FormulaR1C1 = "=INDIRECT(ADDRESS(MATCH(VALUE(RC[-23]),depara_vendedores!C1,0),4,1,1,""depara_vendedores""),TRUE)"
+    Sheets("Z9D19N").Range("AV2").FormulaR1C1 = "=INDIRECT(ADDRESS(MATCH(VALUE(RC[-24]),depara_vendedores!C1,0),2,1,1,""depara_vendedores""),TRUE)"
+    
+    Sheets("Z9D19N").Range("AS2:AV2").Copy
+    Sheets("Z9D19N").Range("AS2:AV" & liz).PasteSpecial Paste:=xlPasteFormulas, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+    Sheets("Z9D19N").Calculate
+    Sheets("Z9D19N").Range("AS2:AV" & liz).Copy
+    Sheets("Z9D19N").Range("AS2:AV" & liz).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+    
+    Sheets("Z9D19N").Range("A1:AV1").Select
+    
+    With Selection.Interior
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .Color = 6299648
+        .TintAndShade = 0
+        .PatternTintAndShade = 0
+    End With
+    
+    With Selection.Font
+        .ThemeColor = xlThemeColorDark1
+        .TintAndShade = 0
+        .Bold = True
+    End With
+
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    
+    Sheets("Z9D19N").Columns("A:AV").AutoFit
+    Sheets("Z9D19N").Columns("A:AV").AutoFilter
+    
+    With ActiveWorkbook.Names("TD_AREA")
+        .Name = "TD_AREA"
+        .RefersToR1C1 = "=Z9D19N!C1:C48"
+        .Comment = ""
+    End With
+    
+    ActiveWorkbook.RefreshAll
+    
+    exp_Z9D19N
+    
+    Sheets("td").Select
+    
+End Sub
+Sub extrair_claro()
+    
+    Dim nome_arquivo As String
+    arquivo_base = ActiveWorkbook.Name
+    
+    SAP_Logon
+    
+    'Instrução para guardar os valores das ordens da claro
+        'Contar linhas
+            Dim ultima_linha As Double
+            ultima_linha = ContaLinhas(Sheets("origem_ordens_claro").Range("A:A"))
+            Sheets("origem_ordens_claro").Range("A2:A" & ultima_linha).Copy
+        
+    Dim WSHShell, SAPGUIPath, SID, InstanceNo, WinTitle, SapGuiAuto, application, connection, session
+
+    If Not IsObject(application) Then
+       Set SapGuiAuto = GetObject("SAPGUI")
+       Set application = SapGuiAuto.GetScriptingEngine
+    End If
+    If Not IsObject(connection) Then
+       Set connection = application.Children(0)
+    End If
+    If Not IsObject(session) Then
+       Set session = connection.Children(0)
+    End If
+    If IsObject(WScript) Then
+       WScript.ConnectObject session, "on"
+       WScript.ConnectObject application, "on"
+    End If
+    
+    'Maximizar a tela (quando já fez logon)
+    session.findById("wnd[0]").maximize
+    'Digitar o código do relatório na barra inicial
+    session.findById("wnd[0]/tbar[0]/okcd").Text = "zami001n"
+    'Clicar no botão para abrir a transação
+    session.findById("wnd[0]/tbar[0]/btn[0]").press
+    'Coloca o Centro de Distribuição como *
+    session.findById("wnd[0]/usr/ctxtX_WERKS-LOW").Text = "*"
+    'Coloca a visão como V011
+    session.findById("wnd[0]/usr/ctxtX_VISAO").Text = "V002"
+    'Abre a janela para preencher com o número das ordens
+    session.findById("wnd[0]/usr/btn%_X_VBELN_%_APP_%-VALU_PUSH").press
+    'Cola as ordens selecionadas
+    session.findById("wnd[1]/tbar[0]/btn[24]").press
+    'Envia as ordens para seleção
+    session.findById("wnd[1]/tbar[0]/btn[8]").press
+    'Executar o relatório
+    session.findById("wnd[0]/tbar[1]/btn[8]").press
+    'Código para exportar
+    session.findById("wnd[0]/mbar/menu[0]/menu[4]/menu[1]").Select
+    session.findById("wnd[1]/usr/ctxtDY_PATH").Text = "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-Mãe (2019)\Extraído_SAP"
+    session.findById("wnd[1]/usr/ctxtDY_FILENAME").Text = "base_claro.xlsx"
+    session.findById("wnd[1]/usr/ctxtDY_FILENAME").caretPosition = 15
+    session.findById("wnd[1]/tbar[0]/btn[11]").press
+    
+    'Código para fechar as sessões do SAP
+            While connection.Children.Count > 0
+                Set MySession = connection.Children(0)
+                MySession.findById("wnd[0]").Close
+                On Error Resume Next
+                MySession.findById("wnd[1]/usr/btnSPOP-OPTION1").press
+                On Error GoTo 0
+            Wend
+            
+    Importar_Claro_V2
+
+    MsgBox "Extração da Claro realizada com sucesso"
+    
+End Sub
+
+Sub Importar_Claro_V2()
+'
+    Dim nome_arquivo As String
+    arquivo_base = ActiveWorkbook.Name
+    
+    Windows(arquivo_base).Activate
+    Sheets("base_claro").Select
+    Cells.Clear
+    
+    Dim xRet As Boolean
+    xRet = IsWorkBookOpen("base_claro.xlsx")
+    If Not xRet Then
+        Workbooks.Open Filename:="G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-Mãe (2019)\Extraído_SAP\base_claro.xlsx"
+        Windows("base_claro.xlsx").Activate
+    Else
+        Windows("base_claro.xlsx").Activate
+    End If
+    
+    Windows("base_claro.xlsx").Activate
+    
+    Sheets("sheet1").Range("A:DH").Copy
+    
+    Windows(arquivo_base).Activate
+    Sheets("base_claro").Activate
+    
+    Range("A1").PasteSpecial xlPasteValuesAndNumberFormats
+    application.CutCopyMode = False
+    
+    Windows("base_claro.xlsx").Close savechanges = False
+    
+    Sheets("base_claro").Select
+    
+    Columns("R:R").TextToColumns Destination:=Range("R1"), DataType:=xlDelimited, _
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, FieldInfo _
+        :=Array(1, 1), TrailingMinusNumbers:=True
+    
+    Columns("A:DH").Select
+    Columns("A:DH").AutoFit
+    Selection.AutoFilter
+        
+    Range("A1:DH1").Select
+    With Selection.Interior
+            .Pattern = xlSolid
+            .PatternColorIndex = xlAutomatic
+            .Color = 6299648
+            .TintAndShade = 0
+            .PatternTintAndShade = 0
+    End With
+    With Selection.Font
+        .ThemeColor = xlThemeColorDark1
+        .TintAndShade = 0
+        .Bold = True
+    End With
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    
+    Range("A1").Select
+    
+    Sheets("TD_Claro").Activate
+    Sheets("TD_Claro").PivotTables("td_claro").PivotCache.Refresh
+        
+End Sub
+Sub estoque_full_full()
+    impo2
+    coloca_filtro_td_demanda
+    criar_origem_estoque
+    tratar_estoque
+    criar_lista_demanda
+    f_full
+    acoes_corte
+    Tratar_estoque_final
+    Copia_Relatório_Estoque
+    'mail_marco_estoque
+    application.Calculation = xlAutomatic
+End Sub
+Sub coloca_filtro_td_demanda()
+    Sheets("TD_Demanda").Select
+    On Error Resume Next
+    ActiveSheet.PivotTables("td_demanda_estoque").PivotFields("Stat. Item"). _
+        CurrentPage = "(All)"
+    With ActiveSheet.PivotTables("td_demanda_estoque").PivotFields("Stat. Item")
+        .PivotItems("BLOQ      ").Visible = False
+        .PivotItems("ENTREG    ").Visible = False
+        .PivotItems("SAIPRD    ").Visible = False
+    End With
+    ActiveSheet.PivotTables("td_demanda_estoque").PivotFields("Stat. Item"). _
+        EnableMultiplePageItems = True
+
+    ActiveSheet.PivotTables("td_demanda_estoque").PivotSelect _
+        "'Texto breve de material                 '[All]", xlLabelOnly, True
+    With ActiveSheet.PivotTables("td_demanda_estoque").PivotFields( _
+        "Texto breve de material                 ")
+        .PivotItems("KIT ESPECIAL PD (PRODUCAO)              ").Visible = False
+        .PivotItems("(vazio) ").Visible = False
+        .PivotItems("(vazio)").Visible = False
+    End With
+End Sub
+Sub criar_origem_estoque()
+Dim nome_mae As String
+nome_mae = ActiveWorkbook.Name
+Debug.Print nome_mae
+
+Sheets("Pré-imp").Select
+Cells.Clear
+
+SAP_Logon
+
+    Dim WSHShell, SAPGUIPath, SID, InstanceNo, WinTitle, SapGuiAuto, application, connection, session
+
+    If Not IsObject(application) Then
+       Set SapGuiAuto = GetObject("SAPGUI")
+       Set application = SapGuiAuto.GetScriptingEngine
+    End If
+    If Not IsObject(connection) Then
+       Set connection = application.Children(0)
+    End If
+    If Not IsObject(session) Then
+       Set session = connection.Children(0)
+    End If
+    If IsObject(WScript) Then
+       WScript.ConnectObject session, "on"
+       WScript.ConnectObject application, "on"
+    End If
+
+    'Limpar a área de pré-importação
+        Sheets("Pré-imp").Cells.Clear
+    'Extrair do SAP o relatório com todos os dados
+        'Acessar consulta
+            'digita MB52 na caixa de busca
+                session.findById("wnd[0]").maximize
+                session.findById("wnd[0]/tbar[0]/okcd").Text = "mb52"
+                session.findById("wnd[0]/tbar[0]/btn[0]").press
+                
+        'Carregar materiais no clipboard
+            Dim lin_mat As Long
+            lin_mat = ContaLinhas(Workbooks(nome_mae).Sheets("Mapa de Materiais").Range("A:A"))
+            Workbooks(nome_mae).Sheets("Mapa de Materiais").Range("A2:A" & lin_mat).Copy
+            Debug.Print lin_mat
+        
+        'Colar materiais na consulta e executar
+            session.findById("wnd[0]").maximize
+            session.findById("wnd[0]/usr/btn%_MATNR_%_APP_%-VALU_PUSH").press
+            session.findById("wnd[1]/tbar[0]/btn[16]").press
+            session.findById("wnd[1]/tbar[0]/btn[24]").press
+            session.findById("wnd[1]/tbar[0]/btn[8]").press
+            
+            session.findById("wnd[0]/tbar[1]/btn[8]").press
+
+
+       'Clicar no botão exportar
+            'Exportar dados
+            session.findById("wnd[0]").maximize
+            session.findById("wnd[0]/tbar[1]/btn[45]").press
+            session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[4,0]").Select
+            session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[4,0]").SetFocus
+            session.findById("wnd[1]/tbar[0]/btn[0]").press
+            
+            Sheets("Pré-Imp").Range("A1").Select
+            ActiveSheet.PasteSpecial Format:="Texto unicode", Link:=False, DisplayAsIcon:=False, NoHTMLFormatting:=True
+
+    'Código para fechar as sessões do SAP
+            While connection.Children.Count > 0
+                Set MySession = connection.Children(0)
+                MySession.findById("wnd[0]").Close
+                On Error Resume Next
+                MySession.findById("wnd[1]/usr/btnSPOP-OPTION1").press
+                On Error GoTo 0
+            Wend
+End Sub
+
+Sub tratar_estoque()
+   'Tratar a importação dos dados
+        Sheets("Pré-imp").Range("A1").Select
+        Range("1:1,3:3").Delete shift:=xlUp
+        Columns("A:A").Select
+        Selection.TextToColumns Destination:=Range("A1"), DataType:=xlDelimited, _
+            TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=False, _
+            Semicolon:=False, Comma:=False, Space:=False, Other:=True, OtherChar _
+            :="|", FieldInfo:=Array(Array(1, 1), Array(2, 1), Array(3, 1), Array(4, 1), Array(5, _
+            1), Array(6, 1), Array(7, 1), Array(8, 1), Array(9, 1), Array(10, 1), Array(11, 1), Array(12 _
+            , 1), Array(13, 1), Array(14, 1), Array(15, 1), Array(16, 1), Array(17, 1), Array(18, 1), _
+            Array(19, 1), Array(20, 1)), TrailingMinusNumbers:=True
+        Range("A:A").Delete shift:=xlLeft
+        Cells.Select
+        Selection.Columns.AutoFit
+        Columns("D:D").Delete shift:=xlToLeft
+        Columns("A:Q").Select
+            With Selection
+                .HorizontalAlignment = xlCenter
+                .VerticalAlignment = xlCenter
+                .WrapText = False
+                .Orientation = 0
+                .AddIndent = False
+                .IndentLevel = 0
+                .ShrinkToFit = False
+                .ReadingOrder = xlContext
+                .MergeCells = False
+            End With
+            
+        
+Dim lin_pre_imp As Long
+lin_pre_imp = ContaLinhas(Sheets("Pré-Imp").Range("B:B"))
+Debug.Print lin_pre_imp
+            
+    'Inserir coluna A com a chave Material & CD
+        
+        Sheets("Pré-Imp").Columns("A:A").Insert shift:=xlToRight
+        Sheets("Pré-Imp").Range("A1").FormulaR1C1 = "Chave"
+        Sheets("Pré-Imp").Range("A2:A" & lin_pre_imp).FormulaR1C1 = "=value(RC[2]&RC[1])"
+        Sheets("Pré-Imp").Range("A2:A" & lin_pre_imp).Copy
+        Range("A2:A" & lin_pre_imp).PasteSpecial Paste:=xlPasteFormulas
+        Sheets("Pré-Imp").Calculate
+        Sheets("Pré-Imp").Range("A2:A" & lin_pre_imp).Copy
+        Sheets("Pré-Imp").Range("A2:A" & lin_pre_imp).PasteSpecial Paste:=xlPasteValues
+           
+        MsgBox "Importação de estoque realizada com sucesso!"
+
+Dim lin_pos_imp As Long
+lin_pos_imp = ContaLinhas(Sheets("Pré-Imp").Range("B:B"))
+Debug.Print lin_pos_imp
+
+    Sheets("Estoque").Range("A:R").Clear
+    Sheets("Pré-imp").Range("A1:R" & lin_pos_imp).Copy
+    Sheets("Estoque").Range("A1").PasteSpecial Paste:=xlPasteValues
+    Sheets("Estoque").Columns("A:R").AutoFilter
+
+    Sheets("Datas").Calculate
+    Sheets("Datas").Range("B3").Copy
+    Sheets("Datas").Range("B4").PasteSpecial Paste:=xlPasteValues
+    application.CutCopyMode = False
+End Sub
+Sub criar_lista_demanda()
+
+    application.Calculation = xlManual
+    
+    'Limpar base
+    Dim lin_rf As Long
+    lin_rf = ContaLinhas(Sheets("TD_Demanda").Range("A:A")) + 1
+    Debug.Print lin_rf
+    Sheets("Relatório_Estoque_Demanda").Range("A4:Z1048576").ClearContents
+    On Error Resume Next
+    Worksheets("Relatório_Estoque_Demanda").ShowAllData
+    
+    'Preparar para copiar
+    Dim lin_td_d As Long
+    lin_td_d = ContaLinhas(Sheets("TD_Demanda").Range("A:A")) + 1
+    Debug.Print lin_td_d
+    Sheets("TD_Demanda").Range("A4:D" & lin_td_d).Copy
+    
+    'Colar resultado da TD
+    Sheets("Relatório_Estoque_Demanda").Range("A4").PasteSpecial Paste:=xlPasteValues
+    
+    'Tratar colunas com valor
+    Sheets("Relatório_Estoque_Demanda").Select
+    Range("A4:A" & lin_td_d).Select
+    Selection.TextToColumns Destination:=Range("A4"), DataType:=xlDelimited, _
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, OtherChar _
+        :="|", FieldInfo:=Array(1, 1), TrailingMinusNumbers:=True
+    
+    Sheets("Relatório_Estoque_Demanda").Range("B4:B" & lin_td_d).Select
+    Range(Selection, Selection.End(xlDown)).Select
+    Selection.TextToColumns Destination:=Range("B4"), DataType:=xlDelimited, _
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=True, _
+        Semicolon:=False, Comma:=False, Space:=False, Other:=False, OtherChar _
+        :="|", FieldInfo:=Array(1, 1), TrailingMinusNumbers:=True
+        
+    ActiveWorkbook.Worksheets("Relatório_Estoque_Demanda").AutoFilter.Sort. _
+        SortFields.Clear
+    ActiveWorkbook.Worksheets("Relatório_Estoque_Demanda").AutoFilter.Sort. _
+        SortFields.Add Key:=Range("D3:D1048576"), SortOn:=xlSortOnValues, Order:= _
+        xlDescending, DataOption:=xlSortNormal
+    With ActiveWorkbook.Worksheets("Relatório_Estoque_Demanda").AutoFilter.Sort
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+    application.Calculation = xlAutomatic
+End Sub
+Sub f_full()
+    application.Calculation = xlManual
+    Worksheets("Relatório_Estoque_Demanda").ShowAllData
+    f1
+    f2
+    f3
+    f4
+    f5
+    f6
+    f7
+    f8
+    f9
+    f10
+    application.Calculation = xlAutomatic
+End Sub
+
+Sub f1()
+    Dim lin_f As Long
+    lin_f = ContaLinhas(Sheets("Relatório_Estoque_Demanda").Range("A:A")) + 2
+
+    'Cria chave CD e MATERIAL
+    Sheets("Relatório_Estoque_Demanda").Range("G4:G" & lin_f).FormulaR1C1 = "=value(RC1&RC2)"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("G4:G" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("G4").PasteSpecial Paste:=xlPasteValues
+
+End Sub
+Sub f2()
+    Dim lin_f As Long
+    lin_f = ContaLinhas(Sheets("Relatório_Estoque_Demanda").Range("A:A")) + 2
+    'Conversor de caixas (busca quantos quilos cabem em uma caixa)
+    Sheets("Relatório_Estoque_Demanda").Range("E4:E" & lin_f).FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(RC[-3],'DEPARA-CX'!C1,0),3,1,1,""DEPARA-CX""),TRUE),""Material não localizado"")"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("E4:E" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("E4:E" & lin_f).PasteSpecial Paste:=xlPasteValues
+
+End Sub
+
+Sub f3()
+    Dim lin_f As Long
+    lin_f = ContaLinhas(Sheets("Relatório_Estoque_Demanda").Range("A:A")) + 2
+    
+    'Converte demanda de Caixa em Kilos
+    Sheets("Relatório_Estoque_Demanda").Range("F4:F" & lin_f).FormulaR1C1 = _
+        "=IFERROR(IF(OR(RC[-1]=0,RC[-2]=0),""Multiplicando por 0"",IF(ISBLANK(RC[-2]),""Material não localizado"",RC[-2]*RC[-1])),""material não localizado"")"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("F4:F" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("F4:F" & lin_f).PasteSpecial Paste:=xlPasteValues
+
+End Sub
+Sub f4()
+    Dim lin_f As Long
+    lin_f = ContaLinhas(Sheets("Relatório_Estoque_Demanda").Range("A:A")) + 2
+    
+    'Utilização livre em KGs
+    Sheets("Relatório_Estoque_Demanda").Range("H4:H" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C6)"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("H4:H" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("H4:H" & lin_f).PasteSpecial Paste:=xlPasteValues
+    
+    'Utilização livre em CXs
+    Sheets("Relatório_Estoque_Demanda").Range("I4:I" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("I4:I" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("I4:I" & lin_f).PasteSpecial Paste:=xlPasteValues
+
+End Sub
+
+Sub f5()
+    Dim lin_f As Long
+    lin_f = ContaLinhas(Sheets("Relatório_Estoque_Demanda").Range("A:A")) + 2
+    
+    'Em Transito KG
+    Sheets("Relatório_Estoque_Demanda").Range("J4:J" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C9)"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("J4:J" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("J4:J" & lin_f).PasteSpecial Paste:=xlPasteValues
+    
+    'Em Transito CX
+    Sheets("Relatório_Estoque_Demanda").Range("K4:K" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("K4:K" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("K4:K" & lin_f).PasteSpecial Paste:=xlPasteValues
+
+End Sub
+Sub f6()
+    Dim lin_f As Long
+    lin_f = ContaLinhas(Sheets("Relatório_Estoque_Demanda").Range("A:A")) + 2
+    
+    'Controle de Qualidade KG
+    Sheets("Relatório_Estoque_Demanda").Range("L4:L" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C11)"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("L4:L" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("L4:L" & lin_f).PasteSpecial Paste:=xlPasteValues
+    
+    'Controle de Qualidade CX
+    Sheets("Relatório_Estoque_Demanda").Range("M4:M" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("M4:M" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("M4:M" & lin_f).PasteSpecial Paste:=xlPasteValues
+
+End Sub
+Sub f7()
+
+    Dim lin_f As Long
+    lin_f = ContaLinhas(Sheets("Relatório_Estoque_Demanda").Range("A:A")) + 2
+        
+    'Restrito KG
+    Sheets("Relatório_Estoque_Demanda").Range("N4:N" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C13)"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("N4:N" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("N4:N" & lin_f).PasteSpecial Paste:=xlPasteValues
+    
+    'Restrito CX
+    Sheets("Relatório_Estoque_Demanda").Range("O4:O" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("O4:O" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("O4:O" & lin_f).PasteSpecial Paste:=xlPasteValues
+    
+End Sub
+Sub f8()
+
+    Dim lin_f As Long
+    lin_f = ContaLinhas(Sheets("Relatório_Estoque_Demanda").Range("A:A")) + 2
+       
+    'Bloqueado KG
+    Sheets("Relatório_Estoque_Demanda").Range("P4:P" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C15)"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("P4:P" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("P4:P" & lin_f).PasteSpecial Paste:=xlPasteValues
+    
+    'Bloqueado CX
+    Sheets("Relatório_Estoque_Demanda").Range("Q4:Q" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("Q4:Q" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("Q4:Q" & lin_f).PasteSpecial Paste:=xlPasteValues
+    
+End Sub
+Sub f9()
+
+    Dim lin_f As Long
+    lin_f = ContaLinhas(Sheets("Relatório_Estoque_Demanda").Range("A:A")) + 2
+    
+        
+    'Devoluções KG
+    Sheets("Relatório_Estoque_Demanda").Range("R4:R" & lin_f).FormulaR1C1 = "=SUMIF(Estoque!C1,RC7,Estoque!C17)"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("R4:R" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("R4:R" & lin_f).PasteSpecial Paste:=xlPasteValues
+    
+    'Devoluções CX
+    Sheets("Relatório_Estoque_Demanda").Range("S4:S" & lin_f).FormulaR1C1 = "=IF(OR(RC5=0,RC5="""",ISBLANK(RC5)),""Falta conversor"",RC[-1]/RC5)"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("S4:S" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("S4:S" & lin_f).PasteSpecial Paste:=xlPasteValues
+    
+End Sub
+Sub f10()
+
+    Dim lin_f As Long
+    lin_f = ContaLinhas(Sheets("Relatório_Estoque_Demanda").Range("A:A")) + 2
+    
+        
+    'Estoque Posicionado
+    Sheets("Relatório_Estoque_Demanda").Range("T4:T" & lin_f).FormulaR1C1 = "=RC[-11]-RC[-16]"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("T4:T" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("T4:T" & lin_f).PasteSpecial Paste:=xlPasteValues
+    
+    'Estoque posicionado + trânsito
+    Sheets("Relatório_Estoque_Demanda").Range("U4:U" & lin_f).FormulaR1C1 = "=(RC[-12]+RC[-10])-RC[-17]"
+    Sheets("Relatório_Estoque_Demanda").Calculate
+    Sheets("Relatório_Estoque_Demanda").Range("U4:U" & lin_f).Copy
+    Sheets("Relatório_Estoque_Demanda").Range("U4:U" & lin_f).PasteSpecial Paste:=xlPasteValues
+    
+End Sub
+Sub acoes_corte()
+    
+    Dim fDlg As FileDialog, lArquivo As String, nome_planilha As String, arquivo_atual As String
+    
+    application.Calculation = xlManual
+    
+    arquivo_atual = ActiveWorkbook.Name
+    
+    Workbooks(arquivo_atual).Sheets("Corte").Select
+    ActiveWindow.SelectedSheets.Delete
+    
+    Sheets("Relatório_Estoque_Demanda").Range("Z3").FormulaR1C1 = corte_importado
+    
+    'Chama o objeto passando os parâmetros
+        Set fDlg = application.FileDialog(FileDialogType:=msoFileDialogOpen)
+        With fDlg
+            'Alterar esta propriedade para True permitirá a seleção de vários arquivos
+            .AllowMultiSelect = False
+    
+            'Determina a forma de visualização dos aruqivos
+            .InitialView = msoFileDialogViewDetails
+    
+            'Determina qual o drive inicial
+            .InitialFileName = "G:\Vila Anastacio\Dir Food Service\KITs\KITS OPERAÇÕES\2019\Kits_2019 Analise Corte"
+        End With
+    
+
+    'Retorna o arquivo selecionado
+        If fDlg.Show = -1 Then
+            lArquivo = fDlg.SelectedItems(1)
+            Workbooks.Open(Filename:=lArquivo, UpdateLinks:=0).RunAutoMacros Which:=xlAutoOpen
+            corte_importado = ActiveWorkbook.Name
+        Else
+            MsgBox "Não foi selecionado nenhum arquivo"
+            Exit Sub
+        End If
+    
+        Workbooks(arquivo_atual).Sheets("Relatório_Estoque_Demanda").Range("Z3").FormulaR1C1 = corte_importado
+    
+    'Seleciona os dados para copiar
+        Workbooks(corte_importado).Activate
+        Dim planilha_corte As String
+        planilha_corte = ActiveSheet.Name
+        
+        Worksheets(planilha_corte).Select
+        Cells.Select
+        Selection.Copy
+        Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+        application.CutCopyMode = False
+        Sheets(planilha_corte).Copy Before:=Workbooks(arquivo_atual).Sheets(1)
+    
+        Dim lin_re As Long
+        lin_re = ContaLinhas(Workbooks(arquivo_atual).Sheets("Relatório_Estoque_Demanda").Range("C:C")) + 1
+        
+        Sheets(planilha_corte).Name = "Corte"
+        
+        Workbooks(arquivo_atual).Sheets("Relatório_Estoque_Demanda").Range("Z4:Z" & lin_re).FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(VALUE(RC[-19]),Corte!C2,0),COLUMN(Corte!R1C34),1,1,""corte""),TRUE),""Não disponível"")"
+        Workbooks(arquivo_atual).Sheets("Relatório_Estoque_Demanda").Calculate
+        Workbooks(arquivo_atual).Sheets("Relatório_Estoque_Demanda").Range("Z4:Z" & lin_re).Copy
+        Worksheets("Relatório_Estoque_Demanda").Select
+        Range("Z4").Select
+        Selection.PasteSpecial Paste:=xlPasteValues
+       
+        Workbooks(corte_importado).Close False
+        Sheets("Relatório_Estoque_Demanda").Select
+        
+        Columns("Z:Z").Select
+        With Selection
+            .WrapText = True
+            .Orientation = 0
+            .AddIndent = False
+            .IndentLevel = 0
+            .ShrinkToFit = False
+            .ReadingOrder = xlContext
+            .MergeCells = False
+        End With
+        
+        application.Calculation = xlAutomatic
+        MsgBox "Fim!"
+End Sub
+Sub Tratar_estoque_final()
+    Sheets("Relatório_Estoque_Demanda").Select
+    Columns("T:U").NumberFormat = "#,##0_);[Red](#,##0)"
+    ActiveWorkbook.Worksheets("Relatório_Estoque_Demanda").AutoFilter.Sort.SortFields.Clear
+    ActiveWorkbook.Worksheets("Relatório_Estoque_Demanda").AutoFilter.Sort.SortFields.Add Key:=Range("U3:U1048576"), SortOn:=xlSortOnValues, Order:=xlAscending, DataOption:=xlSortNormal
+    With ActiveWorkbook.Worksheets("Relatório_Estoque_Demanda").AutoFilter.Sort
+        .Header = xlYes
+        .MatchCase = False
+        .Orientation = xlTopToBottom
+        .SortMethod = xlPinYin
+        .Apply
+    End With
+End Sub
+Sub Copia_Relatório_Estoque()
+
+    Sheets("Relatório_Estoque_Demanda").Copy
+    ChDir _
+        "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-Mãe (2019)\Relatório_Estoques"
+    ActiveWorkbook.SaveAs Filename:="G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-Mãe (2019)\Relatório_Estoques\Relatório_Estoques_e-mail.xlsb", FileFormat:=xlExcel12, CreateBackup:=False
+    ActiveWindow.Close
+
+End Sub
+
+Sub mail_marco_estoque()
+    Dim rng As Range
+    Dim OutApp As Object
+    Dim OutMail As Object
+    
+    Dim lin_mail_rf As Long
+    lin_mail_rf = ContaLinhas(Sheets("Relatório_Estoque_Demanda").Range("A:A"))
+
+    Set rng = Nothing
+    On Error Resume Next
+    Set rng = Sheets("Relatório_Estoque_Demanda").Range("A2:Z" & lin_mail_rf).SpecialCells(xlCellTypeVisible)
+
+    On Error GoTo 0
+
+    If rng Is Nothing Then
+        MsgBox "The selection is not a range or the sheet is protected" & _
+               vbNewLine & "please correct and try again.", vbOKOnly
+        Exit Sub
+    End If
+
+    With application
+        .EnableEvents = False
+        .ScreenUpdating = False
+    End With
+
+    Set OutApp = CreateObject("Outlook.Application")
+    Set OutMail = OutApp.CreateItem(0)
+
+    On Error Resume Next
+    With OutMail
+        .To = Sheets("mail_address").Range("B8").Value
+        .CC = Sheets("mail_address").Range("C8").Value
+        .BCC = ""
+        .Subject = Sheets("mail_address").Range("D8").Value
+        .HTMLBody = Sheets("mail_address").Range("E8").Value & RangetoHTML(rng)
+        .Attachments.Add ("G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-Mãe (2019)\Relatório_Estoques\Relatório_Estoques_e-mail.xlsb")
+        .Send   'or use .Display
+    End With
+    On Error GoTo 0
+
+    With application
+        .EnableEvents = True
+        .ScreenUpdating = True
+    End With
+
+    Set OutMail = Nothing
+    Set OutApp = Nothing
+End Sub
+
+Sub full_Z9139()
+    Criar_Lista_Z9139
+    minilistas
+    grava_hora_z9139
+    mail_motivos
+End Sub
+Sub Criar_Lista_Z9139()
+
+'Preparar base para receber novos dados
+    
+    Sheets("z9139").Activate
+    Cells.Clear
+        
+        'Realizar logon no SAP
+            Dim nome_arquivo As Workbook
+            arquivo_base = ActiveWorkbook.Name
+            SAP_Logon
+    
+        'Instrução para executar o SAP
+
+        
+            Dim WSHShell, SAPGUIPath, SID, InstanceNo, WinTitle, SapGuiAuto, application, connection, session
+
+            If Not IsObject(application) Then
+               Set SapGuiAuto = GetObject("SAPGUI")
+               Set application = SapGuiAuto.GetScriptingEngine
+            End If
+            If Not IsObject(connection) Then
+               Set connection = application.Children(0)
+            End If
+            If Not IsObject(session) Then
+               Set session = connection.Children(0)
+            End If
+            If IsObject(WScript) Then
+               WScript.ConnectObject session, "on"
+               WScript.ConnectObject application, "on"
+            End If
+                
+        'Preenchimento da Tela para acessar a Z9319
+            session.findById("wnd[0]").maximize
+            session.findById("wnd[0]/tbar[0]/okcd").Text = "zb16"
+            session.findById("wnd[0]/tbar[0]/btn[0]").press
+            session.findById("wnd[0]/usr/ctxtX_TAB").Text = "z9139"
+            session.findById("wnd[0]/tbar[1]/btn[8]").press
+            session.findById("wnd[0]/usr/btn%_I1_%_APP_%-VALU_PUSH").press
+            
+        'Processo para filtrar a planilha
+            'Filtrar Z9139
+            'Começa na planilha certa para evitar erros
+            Sheets("Z9D19N").Select
+        
+            'Filtrar Z9D19N só com BLOQ + KIT_BQ
+                'Conta linhas da Z9D19N para saber quanto deve ser filtrado
+                    Dim qtd_linhas_z9d19n As Double
+                    qtd_linhas_z9d19n = ContaLinhas(Sheets("z9d19n").Range("$A:$A"))
+                'Testa se é possível filtrar a planilha
+                    If Not ActiveSheet.AutoFilterMode Then
+                        ActiveSheet.Range("A1").AutoFilter
+                    End If
+                'Testa se a planilha está filtrada
+                    If ActiveSheet.FilterMode Then
+                        ActiveSheet.ShowAllData
+                    End If
+                'Filtra só os casos BLOQ + KIT_BQ para consulta no SAP
+                    Sheets("z9d19n").Range("$A$1:$T$" & qtd_linhas_z9d19n).AutoFilter Field:=23, Criteria1:="=BLOQ", Operator:=xlOr, Criteria2:="=KIT_BQ"
+                'Seleciona apenas as células visíveis
+                    Sheets("z9d19n").Range("$A$2:$A$" & qtd_linhas_z9d19n).SpecialCells(xlCellTypeVisible).Select
+                'Copia os dados selecionados
+                    Selection.Copy
+            
+        'Cola as ordens selecionadas
+            session.findById("wnd[1]").maximize
+            session.findById("wnd[1]/tbar[0]/btn[24]").press
+        'Envia as ordens para seleção
+            session.findById("wnd[1]/tbar[0]/btn[8]").press
+        'Altera o limitador de 500 resultados para sem limite
+            session.findById("wnd[0]/usr/txtMAX_SEL").Text = ""
+        'Executar o relatório
+            session.findById("wnd[0]/tbar[1]/btn[8]").press
+            
+        'Exportar dados
+            session.findById("wnd[0]").maximize
+            session.findById("wnd[0]/mbar/menu[1]/menu[5]").Select
+            session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[4,0]").Select
+            session.findById("wnd[1]/tbar[0]/btn[0]").press
+            
+        'Colar dados
+            Sheets("z9139").Select
+            Range("A1").Select
+            ActiveSheet.PasteSpecial Format:="Texto unicode", Link:=False, DisplayAsIcon:=False, NoHTMLFormatting:=True
+            
+        'Código para fechar as sessões do SAP
+            While connection.Children.Count > 0
+                Set MySession = connection.Children(0)
+                MySession.findById("wnd[0]").Close
+                On Error Resume Next
+                MySession.findById("wnd[1]/usr/btnSPOP-OPTION1").press
+                On Error GoTo 0
+            Wend
+            
+        'Garantir que está na planilha certa
+            Sheets("z9139").Activate
+        'Apagar linhas e colunas desnecessárias
+            Range("1:3,5:5").Delete shift:=xlUp
+            
+        'Tratar importação
+            Columns("A:A").Select
+            Selection.TextToColumns Destination:=Range("A1"), DataType:=xlDelimited, _
+            TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=False, _
+            Semicolon:=False, Comma:=False, Space:=False, Other:=True, OtherChar _
+            :="|", FieldInfo:=Array(Array(1, 1), Array(2, 1), Array(3, 1), Array(4, 1), Array(5, _
+            1), Array(6, 1), Array(7, 1), Array(8, 1), Array(9, 1), Array(10, 1), Array(11, 1), Array(12 _
+            , 1), Array(13, 1), Array(14, 1), Array(15, 1), Array(16, 1), Array(17, 1), Array(18, 1), _
+            Array(19, 1)), TrailingMinusNumbers:=True
+            Columns("A:B").Delete shift:=xlToLeft
+        'Tratar datas
+            Range("F:F,O:O").Replace What:=".", Replacement:="/"
+        
+        'Colocar o filtro
+            Columns("A:X").AutoFilter
+        
+        'Corrigir data de novo
+            'Calcula tamanho da cola
+                    Dim ultima_linha_z9139 As Double
+                    ultima_linha_z9139 = ContaLinhas(Sheets("z9139").Range("A:A"))
+        
+            'PARTE A (DATA BLOQUEIO)
+                'Preenche com fórmula para corrigir formato da data
+                    Range("Q2").FormulaR1C1 = "=IF(ISNUMBER(RC[-11]),RC[-11],DATEVALUE(RC[-11]))"
+                'Colar a fórmula
+                    Range("Q2").AutoFill Destination:=Range("Q2:Q" & ultima_linha_z9139)
+                    ActiveSheet.Calculate
+                'Colar a fórmula no lugar correto
+                    Range("Q2:Q" & ultima_linha_z9139).Copy
+                    Range("F2:F" & ultima_linha_z9139).PasteSpecial Paste:=xlPasteValues
+                
+            'PARTE B (DATA ATUALIZAÇÃO)
+                'Preenche com fórmula para corrigir formato da data
+                    Range("Q2").FormulaR1C1 = "=IF(ISNUMBER(RC[-2]),RC[-2],DATEVALUE(RC[-2]))"
+                'Atualizar a fórmula
+                    Range("Q2").AutoFill Destination:=Range("Q2:Q" & ultima_linha_z9139)
+                    ActiveSheet.Calculate
+                'Colar a fórmula no lugar correto
+                    Range("Q2:Q" & ultima_linha_z9139).Copy
+                    Range("O2:O" & ultima_linha_z9139).PasteSpecial Paste:=xlPasteValues
+                    
+            'Parte C (zerar fórmula)
+                    Range("Q:Q").Clear
+                    
+            'Parte D (criar outras fórmulas)
+            'Criar fórmulas
+                Range("Q1").FormulaR1C1 = "Código e Nome do Erro"
+                Range("R1").FormulaR1C1 = "Área Solucionadora"
+                Range("S1").FormulaR1C1 = "Número Vendedor"
+                Range("T1").FormulaR1C1 = "Nome do Vendedor"
+                Range("U1").FormulaR1C1 = "Região"
+                Range("V1").FormulaR1C1 = "Time de Venda"
+                Range("W1").FormulaR1C1 = "Data da Remessa"
+                Range("X1").FormulaR1C1 = "Status Pedido"
+                
+                
+                Range("Q2").FormulaR1C1 = "=RC[-13]&"" - ""&PROPER(INDIRECT(ADDRESS(MATCH(RC[-13],depara_cod_bloq_sap!C1,0),2,1,1,""depara_cod_bloq_sap""),TRUE))"
+                Range("R2").FormulaR1C1 = "=PROPER(INDIRECT(ADDRESS(MATCH(RC[-14],depara_cod_bloq_sap!C1,0),3,1,1,""depara_cod_bloq_sap""),TRUE))"
+                Range("S2").FormulaR1C1 = "=IFNA(VALUE(INDIRECT(ADDRESS(MATCH(RC[-17],Z9D19N!C1,0),24,1,1,""z9d19n""),TRUE)),""OV não localizada"")"
+                Range("T2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(VALUE(RC[-1]),depara_vendedores!C1,0),2,1,1,""depara_vendedores""),TRUE),""Vendedor não localizado"")"
+                Range("U2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(VALUE(RC[-2]),depara_vendedores!C1,0),4,1,1,""depara_vendedores""),TRUE),""Vendedor não localizado"")"
+                Range("V2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(VALUE(RC[-3]),depara_vendedores!C1,0),3,1,1,""depara_vendedores""),TRUE),""Vendedor não localizado"")"
+                Range("W2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(RC[-21],z9d19n!C1,0),17,1,1,""z9d19n""),TRUE),""OV não localizada"")"
+                Range("X2").FormulaR1C1 = "=IFNA(INDIRECT(ADDRESS(MATCH(RC[-22],z9d19n!C1,0),23,1,1,""z9d19n""),TRUE),""OV não localizada"")"
+            
+                Range("Q2:X2").Copy
+                
+                'contar linhas
+                Dim qtd_linhas As Double
+                qtd_linhas = ContaLinhas(Range("A:A"))
+                
+                Range("Q2:X" & qtd_linhas).PasteSpecial Paste:=xlPasteFormulas, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                ActiveSheet.Calculate
+                Range("Q2:X" & qtd_linhas).Copy
+                'Range("Q2:X" & qtd_linhas).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+                
+                    
+            'Parte D (formatar como data no meio da célular)
+                    Columns("F:F").Select
+                    Selection.NumberFormat = "dd/mm/yy"
+                    Columns("O:O").Select
+                    Selection.NumberFormat = "dd/mm/yy"
+                    Columns("W:W").Select
+                    Selection.NumberFormat = "dd/mm/yy"
+                    
+            'Tratar o título
+                Range("A1:X1").Select
+                With Selection.Interior
+                    .Pattern = xlSolid
+                    .PatternColorIndex = xlAutomatic
+                    .Color = 12611584
+                    .TintAndShade = 0
+                    .PatternTintAndShade = 0
+                End With
+                With Selection.Font
+                    .ThemeColor = xlThemeColorDark1
+                    .TintAndShade = 0
+                    .Bold = True
+                End With
+                With Selection
+                    .HorizontalAlignment = xlCenter
+                    .VerticalAlignment = xlCenter
+                    .WrapText = False
+                    .Orientation = 0
+                    .AddIndent = False
+                    .IndentLevel = 0
+                    .ShrinkToFit = False
+                    .ReadingOrder = xlContext
+                    .MergeCells = False
+                End With
+            
+            'Ajustar largura das colunas
+                Cells.Select
+                Selection.Columns.AutoFit
+                
+        Range("A1").Select
+        
+        With ActiveWorkbook.Names("td_bloq_area")
+            .Name = "td_bloq_area"
+            .RefersToR1C1 = "=z9139!C1:C23"
+            .Comment = ""
+        End With
+        Sheets("td_bloq").PivotTables("td_bloq").PivotCache.Refresh
+        With Sheets("td_bloq").PivotTables("td_bloq").CubeFields( _
+            "[td_bloq_area].[Data da Remessa]")
+            .Orientation = xlColumnField
+            .Position = 1
+        End With
+        
+        ActiveWorkbook.RefreshAll
+        Sheets("Z9D19N").ShowAllData
+        Sheets("td_bloq").Select
+
+End Sub
+
+Sub minilistas()
+
+'Deletar relatórios antig'os
+    On Error Resume Next
+    Kill ("G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-Mãe (2019)\G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-Mãe (2019)\Relatórios-Gerados(Bloq_Kit_BQ)\*.xl*")
+
+'Dimensionar quantidade de linhas
+    Dim qtd_lin_z9139 As Double
+    qtd_lin_z9139 = ContaLinhas(Sheets("z9139").Range("$A:$A"))
+
+'Steps para apagar as células
+    Sheets("z9139 (Cust)").Select
+    Cells.Select
+    Selection.Clear
+    Sheets("z9139 (KeyAcc)").Select
+    Cells.Select
+    Selection.Clear
+    Sheets("z9139 (Tele)").Select
+    Cells.Select
+    Selection.Clear
+    Sheets("z9139 (Fin)").Select
+    Cells.Select
+    Selection.Clear
+    Sheets("z9139 (Log)").Select
+    Cells.Select
+    Selection.Clear
+
+'Filtrar e criar a lista de finanças
+    Sheets("z9139").Select
+    Sheets("z9139").Range("$A$1:$X$" & qtd_lin_z9139).AutoFilter Field:=18, Criteria1:="Financeiro"
+    Range("A1:X" & qtd_lin_z9139).Select
+    Selection.SpecialCells(xlCellTypeVisible).Copy
+    Sheets("z9139 (Fin)").Select
+    Range("A1").Select
+    Selection.PasteSpecial Paste:=xlPasteAllUsingSourceTheme, Operation:=xlNone _
+        , SkipBlanks:=False, Transpose:=False
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    application.CutCopyMode = False
+    Selection.AutoFilter
+    Selection.Columns.AutoFit
+    
+'Filtrar e criar a lista de customers
+    Sheets("z9139").Select
+    Sheets("z9139").Range("$A$1:$X$" & qtd_lin_z9139).AutoFilter Field:=18, Criteria1:="Customer"
+    Range("A1:X" & qtd_lin_z9139).Select
+    Selection.SpecialCells(xlCellTypeVisible).Copy
+    Sheets("z9139 (Cust)").Select
+    Range("A1").Select
+    Selection.PasteSpecial Paste:=xlPasteAllUsingSourceTheme, Operation:=xlNone _
+        , SkipBlanks:=False, Transpose:=False
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    application.CutCopyMode = False
+    Selection.AutoFilter
+    Selection.Columns.AutoFit
+    
+'Filtrar e criar a lista de logistica
+    Sheets("z9139").Select
+    Sheets("z9139").Range("$A$1:$X$" & qtd_lin_z9139).AutoFilter Field:=18, Criteria1:="logistica"
+    Range("A1:X" & qtd_lin_z9139).Select
+    Selection.SpecialCells(xlCellTypeVisible).Copy
+    Sheets("z9139 (Log)").Select
+    Range("A1").Select
+    Selection.PasteSpecial Paste:=xlPasteAllUsingSourceTheme, Operation:=xlNone _
+        , SkipBlanks:=False, Transpose:=False
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    application.CutCopyMode = False
+    Selection.AutoFilter
+    Selection.Columns.AutoFit
+    
+'Filtrar e criar a lista de Televendas
+    Sheets("z9139").Select
+    ActiveSheet.Range("$A$1:$X$" & qtd_lin_z9139).AutoFilter Field:=18, Criteria1:= _
+        "Comercial"
+    ActiveSheet.Range("$A$1:$X$" & qtd_lin_z9139).AutoFilter Field:=22, Criteria1:= _
+        "Televendas - Comercial"
+    Range("A1:X" & qtd_lin_z9139).Select
+    Selection.SpecialCells(xlCellTypeVisible).Copy
+    Sheets("z9139 (Tele)").Select
+    Range("A1").Select
+    Selection.PasteSpecial Paste:=xlPasteAllUsingSourceTheme, Operation:=xlNone _
+        , SkipBlanks:=False, Transpose:=False
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    application.CutCopyMode = False
+    Selection.AutoFilter
+    Selection.Columns.AutoFit
+    
+    
+'Filtrar e criar a lista de Key Accounts
+    Sheets("z9139").Select
+    ActiveSheet.Range("$A$1:$X$" & qtd_lin_z9139).AutoFilter Field:=18, Criteria1:= _
+        "Comercial"
+    ActiveSheet.Range("$A$1:$X$" & qtd_lin_z9139).AutoFilter Field:=22, Criteria1:= _
+        "Key Account - Comercial"
+    Range("A1:X" & qtd_lin_z9139).Select
+    Selection.SpecialCells(xlCellTypeVisible).Copy
+    Sheets("z9139 (KeyAcc)").Select
+    Range("A1").Select
+    Selection.PasteSpecial Paste:=xlPasteAllUsingSourceTheme, Operation:=xlNone _
+        , SkipBlanks:=False, Transpose:=False
+    Selection.PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks _
+        :=False, Transpose:=False
+    application.CutCopyMode = False
+    Selection.AutoFilter
+    Selection.Columns.AutoFit
+
+'Tirar o filtro para evitar cagadas
+    Sheets("z9139").Select
+    ActiveSheet.ShowAllData
+
+    Dim Equipe            As String
+    Dim Sheet_Copiar      As String
+    Dim X                 As Integer
+    
+    
+    For X = 2 To 6
+        Equipe = Sheets("Lista_Copiar_Arquivos").Cells(X, 1).Value
+        Sheet_Copiar = Sheets("Lista_Copiar_Arquivos").Cells(X, 2).Value
+        
+        Sheets(Sheet_Copiar).Select
+        Sheets(Sheet_Copiar).Copy
+        
+        ChDir "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-Mãe (2019)\Relatórios-Gerados(Bloq_Kit_BQ)"
+        ActiveWorkbook.SaveAs Filename:="G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-Mãe (2019)\Relatórios-Gerados(Bloq_Kit_BQ)\" _
+            & "KIT_BQ+BLOQ " & Equipe & ".xlsb", _
+            FileFormat:=xlExcel12, CreateBackup:=False
+        ActiveWorkbook.Close savechanges = False
+    Next
+End Sub
+Sub grava_hora_z9139()
+    Sheets("Datas").Calculate
+    Sheets("Datas").Range("B3").Copy
+    Sheets("Datas").Range("B2").PasteSpecial Paste:=xlPasteValues
+    application.CutCopyMode = False
+End Sub
+Sub mail_motivos()
+    Dim rng As Range
+    Dim OutApp As Object
+    Dim OutMail As Object
+    Dim linha As Integer
+    Dim caminho As String
+
+    For linha = 3 To 7
+        caminho = "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-Mãe (2019)\Relatórios-Gerados(Bloq_Kit_BQ)\"
+        nome_anexo = Sheets("mail_address").Cells(linha, 6).Value & ".xlsb"
+        
+    Dim lt As Double
+    lt = ContaLinhas(Sheets("td_bloq").Range("A:A")) + 2
+        Set rng = Nothing
+        On Error Resume Next
+        Set rng = Sheets("td_bloq").Range("A3:K" & lt).SpecialCells(xlCellTypeVisible)
+    
+        On Error GoTo 0
+    
+        If rng Is Nothing Then
+            MsgBox "The selection is not a range or the sheet is protected" & _
+                   vbNewLine & "please correct and try again.", vbOKOnly
+            Exit Sub
+        End If
+    
+        With application
+            .EnableEvents = False
+            .ScreenUpdating = False
+        End With
+    
+        Set OutApp = CreateObject("Outlook.Application")
+        Set OutMail = OutApp.CreateItem(0)
+    
+        On Error Resume Next
+        With OutMail
+            .To = Sheets("mail_address").Range("B" & linha).Value
+            .CC = Sheets("mail_address").Range("C" & linha).Value
+            .BCC = ""
+            .Subject = Sheets("mail_address").Range("D" & linha).Value
+            .HTMLBody = Sheets("mail_address").Range("E" & linha).Value & RangetoHTML(rng)
+            .Attachments.Add (caminho & nome_anexo)
+            .Send
+        End With
+        On Error GoTo 0
+    
+        With application
+            .EnableEvents = True
+            .ScreenUpdating = True
+        End With
+    
+        Set OutMail = Nothing
+        Set OutApp = Nothing
+    Next
+    
+    MsgBox "emails enviados com sucesso"
+    
+End SubSub full_z9d19n()
+    SAP_Logon
+    impo2
+    exp_Z9D19N
+    mail_marco_Z9D19N
+End Sub
+Public Sub SAP_Logon()
+
+Dim SapGui, Applic, connection, session, WSHShell
+
+Shell "C:\Program Files (x86)\SAP\FrontEnd\SAPgui\saplogon.exe", vbNormalFocus
+Set WSHShell = CreateObject("WScript.Shell")
+
+Do Until WSHShell.AppActivate("SAP Logon ")
+application.Wait Now + TimeValue("0:00:01")
+Loop
+
+Set WSHShell = Nothing
+Set SapGui = GetObject("SAPGUI")
+Set Applic = SapGui.GetScriptingEngine
+Set connection = Applic.OpenConnection("01 [BRF] - SAP ECC Produção -->Logon Automático<---", True)
+Set session = connection.Children(0)
+
+End Sub
+
+Public Sub impo2()
+    Sheets("Z9D19N").Cells.Clear
+    Dim WSHShell, SAPGUIPath, SID, InstanceNo, WinTitle, SapGuiAuto, application, connection, session
+    If Not IsObject(application) Then
+       Set SapGuiAuto = GetObject("SAPGUI")
+       Set application = SapGuiAuto.GetScriptingEngine
+    End If
+    If Not IsObject(connection) Then
+       Set connection = application.Children(0)
+    End If
+    If Not IsObject(session) Then
+       Set session = connection.Children(0)
+    End If
+    If IsObject(WScript) Then
+       WScript.ConnectObject session, "on"
+       WScript.ConnectObject application, "on"
+    End If
+    
+    'Maximizar a tela (quando já fez logon)
+    session.findById("wnd[0]").maximize
+    'Digitar o código do relatório na barra inicial
+    session.findById("wnd[0]/tbar[0]/okcd").Text = "z9d19n"
+    'Clicar no botão para abrir a transação
+    session.findById("wnd[0]/tbar[0]/btn[0]").press
+    'Clicar no botão para filtrar o campo "tipo de documento de vendas"
+    session.findById("wnd[0]/usr/btn%_S_AUART_%_APP_%-VALU_PUSH").press
+    'Abre janela da data
+    session.findById("wnd[0]").sendVKey 4
+    'aperta o botão ok para guardar a data de início
+    session.findById("wnd[1]/tbar[0]/btn[0]").press
+    'Clica no campo e digita YKIT no campo "tipo doc de vendas"
+    session.findById("wnd[0]/usr/ctxtS_AUART-LOW").SetFocus
+    session.findById("wnd[0]/usr/ctxtS_AUART-LOW").Text = "YKIT"
+    'Digita 18* na organização de vendas
+    session.findById("wnd[0]/usr/ctxtS_VKORG-LOW").Text = "18*"
+    'Abrir janela para digitar os tipos de documento
+    session.findById("wnd[0]/usr/btn%_S_AUART_%_APP_%-VALU_PUSH").press
+    'Digitar o primeiro tipo de doc - YKIT
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,0]").Text = "YKIT"
+    'Digitar o segundo tipo de doc - YKIV
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,1]").Text = "YKIV"
+    'Digitar o primeiro tipo de doc - Z371
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,2]").Text = "Z371"
+    'Apertar o botão para fechar a janela
+    session.findById("wnd[1]/tbar[0]/btn[8]").press
+    'Digita a data final no campo correto
+    session.findById("wnd[0]/usr/ctxtS_ERDAT-HIGH").Text = "31.12.2019"
+    session.findById("wnd[0]/usr/ctxtS_ERDAT-LOW").Text = "01.08.2019"
+    'Colocar o layout correto
+    session.findById("wnd[0]/usr/ctxtVARIANT").Text = "/BRUNO"
+    'Resto do código para filtrar
+    session.findById("wnd[0]/usr/ctxtS_VTWEG-LOW").Text = "01"
+    session.findById("wnd[0]/usr/ctxtS_SPART-LOW").Text = "01"
+    session.findById("wnd[0]/usr/ctxtS_STATIT-LOW").SetFocus
+    session.findById("wnd[0]/usr/ctxtS_STATIT-LOW").caretPosition = 0
+    session.findById("wnd[0]").sendVKey 4
+    session.findById("wnd[1]/usr/lbl[1,16]").SetFocus
+    session.findById("wnd[1]/usr/lbl[1,16]").caretPosition = 4
+    session.findById("wnd[1]").sendVKey 2
+    session.findById("wnd[0]/usr/btn%_S_STATIT_%_APP_%-VALU_PUSH").press
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/btnRSCSEL_255-SOP_I[0,0]").SetFocus
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/btnRSCSEL_255-SOP_I[0,0]").press
+    session.findById("wnd[2]/usr/cntlOPTION_CONTAINER/shellcont/shell").setCurrentCell 5, "TEXT"
+    session.findById("wnd[2]/usr/cntlOPTION_CONTAINER/shellcont/shell").selectedRows = "5"
+    session.findById("wnd[2]/usr/cntlOPTION_CONTAINER/shellcont/shell").doubleClickCurrentCell
+    session.findById("wnd[1]/tbar[0]/btn[8]").press
+    
+    'filtrar entreg
+    session.findById("wnd[0]/usr/ctxtS_STATIT-LOW").SetFocus
+    session.findById("wnd[0]/usr/ctxtS_STATIT-LOW").caretPosition = 4
+    session.findById("wnd[0]/usr/btn%_S_STATIT_%_APP_%-VALU_PUSH").press
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/btnRSCSEL_255-SOP_I[0,1]").SetFocus
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/btnRSCSEL_255-SOP_I[0,1]").press
+    session.findById("wnd[2]/usr/cntlOPTION_CONTAINER/shellcont/shell").currentCellRow = 5
+    session.findById("wnd[2]/usr/cntlOPTION_CONTAINER/shellcont/shell").selectedRows = "5"
+    session.findById("wnd[2]/tbar[0]/btn[0]").press
+    session.findById("wnd[2]/tbar[0]/btn[0]").press
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,1]").SetFocus
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE/ctxtRSCSEL_255-SLOW_I[1,1]").caretPosition = 0
+    session.findById("wnd[1]").sendVKey 4
+    session.findById("wnd[2]/usr/lbl[1,8]").SetFocus
+    session.findById("wnd[2]/usr/lbl[1,8]").caretPosition = 5
+    session.findById("wnd[2]").sendVKey 2
+    session.findById("wnd[1]/usr/tabsTAB_STRIP/tabpSIVA/ssubSCREEN_HEADER:SAPLALDB:3010/tblSAPLALDBSINGLE").Columns.elementAt(1).Width = 6
+    session.findById("wnd[1]/tbar[0]/btn[8]").press
+    session.findById("wnd[2]/tbar[0]/btn[0]").press
+
+    'executar o relatório
+    session.findById("wnd[0]/tbar[1]/btn[8]").press
+    
+    'processo para exportar para Excel
+    session.findById("wnd[0]").maximize
+    session.findById("wnd[0]/shellcont[1]/shell").pressToolbarContextButton "&MB_EXPORT"
+    session.findById("wnd[0]/shellcont[1]/shell").selectContextMenuItem "&PC"
+    session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[4,0]").Select
+    session.findById("wnd[1]/usr/subSUBSCREEN_STEPLOOP:SAPLSPO5:0150/sub:SAPLSPO5:0150/radSPOPLI-SELFLAG[4,0]").SetFocus
+    session.findById("wnd[1]/tbar[0]/btn[0]").press
+    
+    Sheets("Z9D19N").Select
+    Range("A1").Select
+    ActiveSheet.PasteSpecial Format:="Texto unicode", Link:=False, DisplayAsIcon:=False, NoHTMLFormatting:=True
+    
+    'Código para fechar as sessões do SAP
+            While connection.Children.Count > 0
+                Set MySession = connection.Children(0)
+                MySession.findById("wnd[0]").Close
+                On Error Resume Next
+                MySession.findById("wnd[1]/usr/btnSPOP-OPTION1").press
+                On Error GoTo 0
+            Wend
+    'registra horário do relatório
+    grava_hora_z9d19n
+    
+'Tratar dados importados
+    Sheets("Z9D19N").Range("1:3,5:5").Delete shift:=xlUp
+    Columns("A:A").Select
+    Selection.TextToColumns Destination:=Range("A1"), DataType:=xlDelimited, _
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=False, _
+        Semicolon:=False, Comma:=False, Space:=False, Other:=True, OtherChar _
+        :="|", FieldInfo:=Array(Array(1, 1), Array(2, 1), Array(3, 1), Array(4, 1), Array(5, _
+        1), Array(6, 1), Array(7, 1), Array(8, 1), Array(9, 1), Array(10, 1), Array(11, 1), Array(12 _
+        , 1), Array(13, 1), Array(14, 1), Array(15, 1), Array(16, 1), Array(17, 1), Array(18, 1), _
+        Array(19, 1), Array(20, 1), Array(21, 1), Array(22, 1), Array(23, 1), Array(24, 1), Array( _
+        25, 1), Array(26, 1), Array(27, 1), Array(28, 1), Array(29, 1), Array(30, 1), Array(31, 1), _
+        Array(32, 1), Array(33, 1), Array(34, 1), Array(35, 1), Array(36, 1), Array(37, 1), Array( _
+        38, 1), Array(39, 1), Array(40, 1), Array(41, 1), Array(42, 1), Array(43, 1), Array(44, 1), _
+        Array(45, 1), Array(46, 1), Array(47, 1), Array(48, 1), Array(49, 1), Array(50, 1), Array( _
+        51, 1), Array(52, 1), Array(53, 1), Array(54, 1), Array(55, 1), Array(56, 1), Array(57, 1), _
+        Array(58, 1), Array(59, 1)), TrailingMinusNumbers:=True
+    Selection.Delete shift:=xlToLeft
+    
+    Columns("B:B").Select
+    Selection.Replace What:=".", Replacement:="/", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+        
+    Columns("S:S").Select
+    Selection.Replace What:=".", Replacement:="/", LookAt:=xlPart, _
+        SearchOrder:=xlByRows, MatchCase:=False, SearchFormat:=False, _
+        ReplaceFormat:=False
+    Selection.TextToColumns Destination:=Range("S1"), DataType:=xlDelimited, _
+        TextQualifier:=xlDoubleQuote, ConsecutiveDelimiter:=False, Tab:=False, _
+        Semicolon:=False, Comma:=False, Space:=False, Other:=Tr
+    
+    'Tratar data
+    Dim liz As Double
+    liz = ContaLinhas(Sheets("Z9D19N").Range("B2:B1048575")) + 1
+    Debug.Print liz
+    Sheets("Z9D19N").Columns("S:S").Insert shift:=xlToRight
+    Sheets("Z9D19N").Range("S1").FormulaR1C1 = "Dt.Remessa"
+    Sheets("Z9D19N").Range("S2:S" & liz).FormulaR1C1 = "=VALUE(RC[1])"
+    ActiveSheet.Calculate
+    Sheets("Z9D19N").Columns("S:S").Copy
+    Sheets("Z9D19N").Columns("S:S").PasteSpecial Paste:=xlPasteValues
+    Sheets("Z9D19N").Columns("S:S").NumberFormat = "m/d/yyyy"
+
+    Sheets("Z9D19N").Columns("A:A").Insert shift:=xlToRight
+    Sheets("Z9D19N").Range("A1").FormulaR1C1 = Sheets("Z9D19N").Range("b1").Value
+    Sheets("Z9D19N").Range("A2:A" & liz).FormulaR1C1 = "=VALUE(RC[1])"
+    ActiveSheet.Calculate
+    Sheets("Z9D19N").Columns("A:A").Copy
+    Sheets("Z9D19N").Columns("A:A").PasteSpecial Paste:=xlPasteValues
+    Sheets("Z9D19N").Columns("B:B").Delete shift:=xlToLeft
+
+    Sheets("Z9D19N").Columns("Q:R").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("R:R").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("Y:Y").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("AB:AB").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("AG:AG").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("AH:AH").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("AL:AL").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("AN:AP").Delete shift:=xlToLeft
+    Sheets("Z9D19N").Columns("AS:AU").Delete shift:=xlToLeft
+    
+    Sheets("Z9D19N").Range("AS1").FormulaR1C1 = "Flag PaP"
+    Sheets("Z9D19N").Range("AT1").FormulaR1C1 = "Time"
+    Sheets("Z9D19N").Range("AU1").FormulaR1C1 = "Região"
+    Sheets("Z9D19N").Range("AV1").FormulaR1C1 = "Nome Vendedor"
+    
+    Sheets("Z9D19N").Range("AS2").FormulaR1C1 = "=IF(ISNA(MATCH(VALUE(RC[-17]),depara_portaporta!C1,0)),""Não é Porta a Porta"",""Porta a Porta"")"
+    Sheets("Z9D19N").Range("AT2").FormulaR1C1 = "=INDIRECT(ADDRESS(MATCH(VALUE(RC[-22]),depara_vendedores!C1,0),3,1,1,""depara_vendedores""),TRUE)"
+    Sheets("Z9D19N").Range("AU2").FormulaR1C1 = "=INDIRECT(ADDRESS(MATCH(VALUE(RC[-23]),depara_vendedores!C1,0),4,1,1,""depara_vendedores""),TRUE)"
+    Sheets("Z9D19N").Range("AV2").FormulaR1C1 = "=INDIRECT(ADDRESS(MATCH(VALUE(RC[-24]),depara_vendedores!C1,0),2,1,1,""depara_vendedores""),TRUE)"
+    
+    Sheets("Z9D19N").Range("AS2:AV2").Copy
+    Sheets("Z9D19N").Range("AS2:AV" & liz).PasteSpecial Paste:=xlPasteFormulas, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+    Sheets("Z9D19N").Calculate
+    Sheets("Z9D19N").Range("AS2:AV" & liz).Copy
+    Sheets("Z9D19N").Range("AS2:AV" & liz).PasteSpecial Paste:=xlPasteValues, Operation:=xlNone, SkipBlanks:=False, Transpose:=False
+    
+    Sheets("Z9D19N").Range("A1:AV1").Select
+    
+    With Selection.Interior
+        .Pattern = xlSolid
+        .PatternColorIndex = xlAutomatic
+        .Color = 6299648
+        .TintAndShade = 0
+        .PatternTintAndShade = 0
+    End With
+    
+    With Selection.Font
+        .ThemeColor = xlThemeColorDark1
+        .TintAndShade = 0
+        .Bold = True
+    End With
+
+    With Selection
+        .HorizontalAlignment = xlCenter
+        .VerticalAlignment = xlCenter
+        .WrapText = False
+        .Orientation = 0
+        .AddIndent = False
+        .IndentLevel = 0
+        .ShrinkToFit = False
+        .ReadingOrder = xlContext
+        .MergeCells = False
+    End With
+    
+    Sheets("Z9D19N").Columns("A:AV").AutoFit
+    Sheets("Z9D19N").Columns("A:AV").AutoFilter
+    
+    With ActiveWorkbook.Names("TD_AREA")
+        .Name = "TD_AREA"
+        .RefersToR1C1 = "=Z9D19N!C1:C48"
+        .Comment = ""
+    End With
+    
+    ActiveWorkbook.RefreshAll
+    
+End Sub
+Sub grava_hora_z9d19n()
+    Sheets("Datas").Calculate
+    Sheets("Datas").Range("B3").Copy
+    Sheets("Datas").Range("B1").PasteSpecial Paste:=xlPasteValues
+    application.CutCopyMode = False
+End Sub
+Sub exp_Z9D19N()
+    Sheets("Z9D19N").Copy
+    ChDir _
+        "G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-Mãe (2019)\Extraído_SAP"
+    ActiveWorkbook.SaveAs Filename:="G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-Mãe (2019)\Extraído_SAP\Z9D19N.xlsb", FileFormat:=xlExcel12, CreateBackup:=False
+    Workbooks("Z9D19N").Close
+End Sub
+Sub mail_marco_Z9D19N()
+    Dim rng As Range
+    Dim OutApp As Object
+    Dim OutMail As Object
+    Dim ltd As Double
+    ltd = ContaLinhas(Sheets("td").Range("A:A"))
+    Set rng = Nothing
+    On Error Resume Next
+    Set rng = Sheets("td").Range("A2:G" & ltd).SpecialCells(xlCellTypeVisible)
+
+    On Error GoTo 0
+
+    If rng Is Nothing Then
+        MsgBox "The selection is not a range or the sheet is protected" & _
+               vbNewLine & "please correct and try again.", vbOKOnly
+        Exit Sub
+    End If
+
+    With application
+        .EnableEvents = False
+        .ScreenUpdating = False
+    End With
+
+    Set OutApp = CreateObject("Outlook.Application")
+    Set OutMail = OutApp.CreateItem(0)
+
+    On Error Resume Next
+    With OutMail
+        .To = Sheets("mail_address").Range("B2").Value
+        .CC = Sheets("mail_address").Range("C2").Value
+        .BCC = ""
+        .Subject = Sheets("mail_address").Range("D2").Value
+        .HTMLBody = Sheets("mail_address").Range("E2").Value & RangetoHTML(rng)
+        .Attachments.Add ("G:\Vila Anastacio\Dir Food Service\KITs\Ano 2019\Controle-Mãe (2019)\Extraído_SAP\Z9D19N.xlsb")
+        .Send   'or use .Display
+    End With
+    On Error GoTo 0
+
+    With application
+        .EnableEvents = True
+        .ScreenUpdating = True
+    End With
+
+    Set OutMail = Nothing
+    Set OutApp = Nothing
+End Sub
+
+Public Function RangetoHTML(rng As Range)
+    Dim fso As Object
+    Dim ts As Object
+    Dim TempFile As String
+    Dim TempWB As Workbook
+
+    TempFile = Environ$("temp") & "\" & Format(Now, "dd-mm-yy h-mm-ss") & ".htm"
+
+    rng.Copy
+    Set TempWB = Workbooks.Add(1)
+    With TempWB.Sheets(1)
+        .Cells(1).PasteSpecial Paste:=8
+        .Cells(1).PasteSpecial xlPasteValues, , False, False
+        .Cells(1).PasteSpecial xlPasteFormats, , False, False
+        .Cells(1).Select
+        application.CutCopyMode = False
+        On Error Resume Next
+        .DrawingObjects.Visible = True
+        .DrawingObjects.Delete
+        On Error GoTo 0
+    End With
+
+    'Publish the sheet to a htm file
+    With TempWB.PublishObjects.Add( _
+         SourceType:=xlSourceRange, _
+         Filename:=TempFile, _
+         Sheet:=TempWB.Sheets(1).Name, _
+         Source:=TempWB.Sheets(1).UsedRange.Address, _
+         HtmlType:=xlHtmlStatic)
+        .Publish (True)
+    End With
+
+    'Read all data from the htm file into RangetoHTML
+    Set fso = CreateObject("Scripting.FileSystemObject")
+    Set ts = fso.GetFile(TempFile).OpenAsTextStream(1, -2)
+    RangetoHTML = ts.readall
+    ts.Close
+    RangetoHTML = Replace(RangetoHTML, "align=center x:publishsource=", _
+                          "align=left x:publishsource=")
+
+    'Close TempWB
+    TempWB.Close savechanges:=False
+
+    'Delete the htm file we used in this function
+    Kill TempFile
+
+    Set ts = Nothing
+    Set fso = Nothing
+    Set TempWB = Nothing
+End Function
+
+Public Function ContaLinhas(area As Range) As Long
+    Dim celula As Range, TotalLinhas As Long
+    TotalLinhas = 0
+    For Each celula In area
+        If celula <> "" Then
+            TotalLinhas = TotalLinhas + 1
+        End If
+    Next
+    ContaLinhas = TotalLinhas
+End Function
+Public Function IsWorkBookOpen(Name As String) As Boolean
+    Dim xWb As Workbook
+    On Error Resume Next
+    Set xWb = application.Workbooks.Item(Name)
+    IsWorkBookOpen = (Not xWb Is Nothing)
+End Function
+Public Sub KillMessageFilter()
+Dim lMsgFilter As Long
+CoRegisterMessageFilter 0&, lMsgFilter
+'your code here
+CoRegisterMessageFilter lMsgFilter, lMsgFilter
+End Sub
+
+Private Declare PtrSafe Function _
+CoRegisterMessageFilter Lib "OLE32.DLL" _
+(ByVal lFilterIn As Long, _
+ByRef lPreviousFilter) As LongPtr
+
+
+
